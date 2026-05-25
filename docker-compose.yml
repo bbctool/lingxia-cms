@@ -1,0 +1,53 @@
+services:
+  migrate:
+    build:
+      context: .
+      target: builder
+    environment:
+      DATABASE_URI: postgres://payload:payload@postgres:5432/lingxia_cms
+      DATABASE_URL: postgres://payload:payload@postgres:5432/lingxia_cms
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me-min-32-chars-long-secret-key}
+    command: npx payload migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  cms:
+    build: .
+    ports:
+      - '3001:3001'
+    environment:
+      DATABASE_URI: postgres://payload:payload@postgres:5432/lingxia_cms
+      DATABASE_URL: postgres://payload:payload@postgres:5432/lingxia_cms
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me-min-32-chars-long-secret-key}
+      PAYLOAD_PUBLIC_URL: ${PAYLOAD_PUBLIC_URL:-http://localhost:3001}
+      REVALIDATE_URL: ${REVALIDATE_URL:-}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
+      PORT: '3001'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: payload
+      POSTGRES_DB: lingxia_cms
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U payload -d lingxia_cms']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  media_data:
