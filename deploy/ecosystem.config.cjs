@@ -4,12 +4,14 @@ module.exports = {
     {
       name: "lingxia-cms",
       cwd: "/root/lingxia/lingxia-cms",
-      script: "npm",
-      args: "start",
+      script: "node_modules/.bin/next",
+      args: "start -p 9001",
+      exec_mode: "fork",
       env: {
         NODE_ENV: "production",
         PORT: 9001,
         HOSTNAME: "0.0.0.0",
+        NODE_OPTIONS: "--no-deprecation",
       },
       max_memory_restart: "800M",
       instances: 1,
@@ -18,8 +20,9 @@ module.exports = {
     {
       name: "lingxia-home",
       cwd: "/root/lingxia/lingxia_home",
-      script: "npm",
-      args: "start",
+      script: "node_modules/.bin/next",
+      args: "start -p 9000",
+      exec_mode: "fork",
       env: {
         NODE_ENV: "production",
         PORT: 9000,
