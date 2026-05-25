@@ -18,8 +18,14 @@ chmod 600 ~/.ssh/authorized_keys
 ## Bootstrap (once)
 
 ```bash
+# 1) On server — add deploy public key (see deploy/keys/lingxia_deploy.pub locally)
+# 2) Run setup
 bash /root/lingxia/lingxia-cms/deploy/setup-server.sh
-# then configure .env from deploy/env.example, migrate, seed, pm2 start
+# 3) Configure env
+cp /root/lingxia/lingxia-cms/deploy/env.example /tmp/lingxia-env-ref
+# Edit /root/lingxia/lingxia-cms/.env and lingxia_home/.env (match POSTGRES_PASSWORD from .env.db)
+# 4) First deploy
+bash /root/lingxia/lingxia-cms/deploy/first-deploy.sh
 ```
 
-`deploy/keys/` is gitignored.
+After GitHub Secrets are set, push to `main` triggers `/root/lingxia/deploy.sh`.
