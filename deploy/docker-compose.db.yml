@@ -1,0 +1,21 @@
+services:
+  lingxia-postgres:
+    image: postgres:16-alpine
+    container_name: lingxia-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: lingxia_cms
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - lingxia_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payload -d lingxia_cms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  lingxia_pgdata:
