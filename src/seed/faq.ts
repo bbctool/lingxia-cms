@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { DEFAULT_LOCALE, type LocaleCode } from '../config/locales'
 import { BYPASS_PUBLISH_GUARD } from '../hooks/publishGuard'
 import { postRevalidate } from '../lib/postRevalidate'
 import { buildFaqRevalidate } from '../lib/revalidateTags'
@@ -30,9 +31,9 @@ async function deleteSiteFaqItems(payload: Payload, siteId: number): Promise<num
 export async function seedFaq(
   payload: Payload,
   siteId: number,
-  options?: { locale?: string },
+  options?: { locale?: LocaleCode },
 ): Promise<void> {
-  const locale = options?.locale ?? 'zh-Hans'
+  const locale = options?.locale ?? DEFAULT_LOCALE
   const faqSeed = loadFaqSeedFromMarkdown()
 
   const removed = await deleteSiteFaqItems(payload, siteId)
