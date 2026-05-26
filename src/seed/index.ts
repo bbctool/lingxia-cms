@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 
 import { seedRbac } from './rbac'
 import { seedCharacters } from './characters'
-import { FAQ_SEED } from './faq-items'
+import { seedFaq } from './faq'
 import { seedHomePage } from './home-page'
 import { seedPages } from './pages'
 import { seedPreviewUser } from './preview-user'
@@ -13,50 +13,6 @@ const require = createRequire(import.meta.url)
 
 function loadEnv() {
   require('@next/env').loadEnvConfig(process.cwd())
-}
-
-async function seedFaq(payload: Awaited<ReturnType<typeof getPayload>>, siteId: number) {
-  for (const item of FAQ_SEED) {
-    const existing = await payload.find({
-      collection: 'faq-items',
-      where: {
-        and: [
-          { site: { equals: siteId } },
-          { question: { equals: item.question } },
-        ],
-      },
-      limit: 1,
-      locale: 'zh-Hans',
-    })
-
-    if (existing.docs.length > 0) {
-      await payload.update({
-        collection: 'faq-items',
-        id: existing.docs[0].id,
-        data: {
-          site: siteId,
-          question: item.question,
-          answer: item.answer,
-          sort: item.sort,
-          visible: true,
-        },
-        locale: 'zh-Hans',
-      })
-    } else {
-      await payload.create({
-        collection: 'faq-items',
-        data: {
-          site: siteId,
-          question: item.question,
-          answer: item.answer,
-          sort: item.sort,
-          visible: true,
-        },
-        locale: 'zh-Hans',
-      })
-    }
-  }
-  console.log('FAQ items seeded (zh-Hans)')
 }
 
 async function seed() {

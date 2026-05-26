@@ -68,6 +68,8 @@ export function buildFaqRevalidate(siteSlug: string): RevalidatePayload {
 
   forEachLocale(siteSlug, (locale) => {
     tags.push(tag('faq', siteSlug, locale))
+    tags.push(tag('home', siteSlug, locale))
+    paths.push(`/${locale}`)
     paths.push(`/${locale}/faq`)
   })
 

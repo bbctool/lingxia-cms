@@ -1,5 +1,6 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
+import { postRevalidate } from '../lib/postRevalidate'
 import {
   buildArticleRevalidate,
   buildCharacterRevalidate,
@@ -8,32 +9,6 @@ import {
   buildSiteSettingsRevalidate,
   type RevalidatePayload,
 } from '../lib/revalidateTags'
-
-async function postRevalidate(body: RevalidatePayload) {
-  const url = process.env.REVALIDATE_URL
-  const secret = process.env.REVALIDATE_SECRET
-
-  if (!url) {
-    console.info('[revalidate] REVALIDATE_URL not set, skip', body)
-    return
-  }
-
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(secret ? { 'x-revalidate-secret': secret } : {}),
-      },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      console.warn('[revalidate] failed', res.status, await res.text())
-    }
-  } catch (err) {
-    console.warn('[revalidate] error', err)
-  }
-}
 
 async function resolveSiteSlug(
   site: unknown,

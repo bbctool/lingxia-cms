@@ -14,7 +14,9 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/index.ts",
+    "seed:faq": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-faq.ts",
     "seed:push": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_DB_PUSH=true tsx src/seed/index.ts",
+    "generate:faq": "tsx scripts/generate-faq-artifacts.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start -p ${PORT:-3001}"
   },
   "dependencies": {
