@@ -291,6 +291,10 @@ export interface Article {
   id: number;
   site: number | Site;
   author?: (number | null) | User;
+  /**
+   * Copied from author display name on create; shown on the public site.
+   */
+  authorDisplayName?: string | null;
   title: string;
   /**
    * Strategy A: one slug for all locales (e.g. welcome-to-lingxia). Do not change per language.
@@ -877,6 +881,7 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ArticlesSelect<T extends boolean = true> {
   site?: T;
   author?: T;
+  authorDisplayName?: T;
   title?: T;
   slug?: T;
   excerpt?: T;

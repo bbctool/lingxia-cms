@@ -7,6 +7,7 @@ import * as migration_20260519_200000_audit_logs from './20260519_200000_audit_l
 import * as migration_20260520_090500_users_api_key from './20260520_090500_users_api_key';
 import * as migration_20260520_120000_rbac_v2 from './20260520_120000_rbac_v2';
 import * as migration_20260519_160000_chapter_show_flags from './20260519_160000_chapter_show_flags';
+import * as migration_20260522_100000_article_author_display_name from './20260522_100000_article_author_display_name';
 
 export const migrations = [
   {
@@ -48,5 +49,10 @@ export const migrations = [
     up: migration_20260519_160000_chapter_show_flags.up,
     down: migration_20260519_160000_chapter_show_flags.down,
     name: '20260519_160000_chapter_show_flags',
+  },
+  {
+    up: migration_20260522_100000_article_author_display_name.up,
+    down: migration_20260522_100000_article_author_display_name.down,
+    name: '20260522_100000_article_author_display_name',
   },
 ];

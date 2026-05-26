@@ -72,6 +72,19 @@ export const Articles: CollectionConfig = {
       },
     },
     {
+      name: 'authorDisplayName',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: 'Copied from author display name on create; shown on the public site.',
+      },
+      access: {
+        create: () => false,
+        update: () => false,
+      },
+    },
+    {
       name: 'title',
       type: 'text',
       required: true,

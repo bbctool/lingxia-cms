@@ -36,6 +36,11 @@ export const setArticleAuthorOnCreate: CollectionBeforeChangeHook = ({
 }) => {
   if (operation === 'create' && req.user?.id && data) {
     data.author = req.user.id
+    const displayName = req.user.displayName
+    data.authorDisplayName =
+      typeof displayName === 'string' && displayName.trim()
+        ? displayName.trim()
+        : req.user.email
   }
   return data
 }
