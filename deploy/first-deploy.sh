@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # First deploy after .env files are configured (run on test server)
+#
+# Does NOT run database migrate or seed — apply those manually once (see end of script).
 set -euo pipefail
 
 ROOT="/root/lingxia"
@@ -16,8 +18,6 @@ docker compose -f "$ROOT/docker-compose.db.yml" --env-file "$ROOT/.env.db" up -d
 
 cd "$CMS"
 npm ci
-npm run payload migrate
-npm run seed
 npm run build
 
 cd "$HOME"
@@ -28,4 +28,21 @@ cd "$ROOT"
 pm2 start ecosystem.config.cjs || pm2 reload ecosystem.config.cjs
 pm2 save
 
-echo "Done. CMS: http://39.102.52.74:9001/admin  Home: http://39.102.52.74:9000/zh-Hans"
+cat <<EOF
+
+Done. Services started (build + PM2 only).
+
+==> Database setup (manual — required before CMS admin works):
+
+  cd $CMS
+  npm run payload migrate    # apply schema migrations
+  npm run seed               # RBAC, site, sample content
+
+  pm2 restart lingxia-cms
+
+CMS:  http://39.102.52.74:9001/admin
+Home: http://39.102.52.74:9000/zh-Hans
+
+GitHub Actions deploy (deploy.sh) also skips migrate/seed — run the same commands after schema changes.
+
+EOF

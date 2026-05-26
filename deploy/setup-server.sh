@@ -38,8 +38,7 @@ docker compose -f "$ROOT/docker-compose.db.yml" --env-file "$ROOT/.env.db" up -d
 
 echo "==> Next steps (manual):"
 echo "  1. Copy deploy/env.example → lingxia-cms/.env and lingxia_home/.env (fill secrets)"
-echo "  2. cd $REPO_CMS && npm ci && npm run payload migrate && npm run seed"
-echo "  3. cd $REPO_CMS && npm run build"
-echo "  4. cd $REPO_HOME && npm ci && npm run build"
-echo "  5. pm2 start $ROOT/ecosystem.config.cjs && pm2 save && pm2 startup"
-echo "  6. Open http://39.102.52.74:9001/admin"
+echo "  2. bash $REPO_CMS/deploy/first-deploy.sh          # build + PM2 (no DB migrate/seed)"
+echo "  3. cd $REPO_CMS && npm run payload migrate && npm run seed"
+echo "  4. pm2 restart lingxia-cms"
+echo "  5. Open http://39.102.52.74:9001/admin"

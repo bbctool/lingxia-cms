@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Deploy lingxia test server (PM2 + Docker Postgres)
 # Usage: /root/lingxia/deploy.sh cms|home|all
+#
+# Does NOT run payload migrate or seed — apply manually when schema/data changes:
+#   cd /root/lingxia/lingxia-cms && npm run payload migrate && npm run seed
 set -euo pipefail
 
 TARGET="${1:-all}"
@@ -10,8 +13,9 @@ deploy_cms() {
   cd "$ROOT/lingxia-cms"
   git fetch origin main
   git reset --hard origin/main
+  install -m 755 deploy/deploy.sh "$ROOT/deploy.sh"
   npm ci
-  npm run payload migrate
+  # DB migrate/seed are manual: npm run payload migrate && npm run seed
   npm run build
   pm2 reload lingxia-cms --update-env || pm2 start "$ROOT/ecosystem.config.cjs" --only lingxia-cms
 }
