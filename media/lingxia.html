@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#080e0c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>靈蝦 · 澳門財運命格</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+      background:#080e0c;color:#f0e8d8;
+    }
+    :root{
+      --t:#00c8a8;--tl:#7ffde0;--td:#007a68;--tdim:rgba(0,200,168,.12);
+      --r:#e63333;--rl:#ff7070;
+      --g:#f5c842;--gl:#ffe788;--gd:#b89020;--gdim:rgba(245,200,66,.18);
+      --o:#e87d3e;--ol:#f5a872;
+      --dk:#060e0a;--dk2:#0c1a12;--dk3:#142018;
+      --cr:#f5e8d0;--tx:#f5e8d0;--txd:#90b8a0;--txdd:rgba(144,184,160,.38);
+      --sp:rgba(0,200,168,.04);
+    }
+
+    /* ─── SCREENS ─── */
+    .screen{
+      position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s ease;
+      transform:translateX(60px);overflow-y:auto;overflow-x:hidden;
+    }
+    .screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+    .screen.exit{opacity:0;transform:translateX(-60px)}
+
+    /* ─── PARTICLES ─── */
+    .ptc-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+    .ptc{position:absolute;bottom:0;opacity:0;border-radius:50%;animation:ptc-up linear infinite}
+    @keyframes ptc-up{
+      0%{opacity:0;transform:translateY(0) scale(0)}8%{opacity:.65}85%{opacity:.12}
+      100%{opacity:0;transform:translateY(-100vh) scale(1.1)}
+    }
+    .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite}
+    @keyframes twinkle{0%,100%{opacity:.06}50%{opacity:.6}}
+
+    /* ─── NEON ANIMATIONS ─── */
+    @keyframes neon-pulse{
+      0%,100%{text-shadow:0 0 6px var(--t),0 0 18px var(--t),0 0 32px rgba(0,200,168,.35)}
+      50%{text-shadow:0 0 4px var(--t),0 0 10px var(--t)}
+    }
+    @keyframes neon-pulse-g{
+      0%,100%{text-shadow:0 0 8px var(--g),0 0 20px var(--g),0 0 36px rgba(245,200,66,.4)}
+      50%{text-shadow:0 0 4px var(--g),0 0 12px var(--g)}
+    }
+    @keyframes neon-flicker{
+      0%,18%,20%,24%,54%,56%,100%{opacity:1}19%,23%,55%{opacity:.4}
+    }
+    @keyframes float-up{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+    @keyframes cdot-blink{from{opacity:.2}to{opacity:1}}
+    @keyframes blink{from{opacity:.15}to{opacity:1}}
+    @keyframes txt-pulse{0%,100%{opacity:.35}50%{opacity:1}}
+    @keyframes coin-fall{
+      0%{opacity:1;transform:translateY(0) rotate(0deg)}
+      80%{opacity:.8}100%{opacity:0;transform:translateY(105vh) rotate(540deg) scale(.6)}
+    }
+
+    /* ─── LANGUAGE BUTTON ─── */
+    #lang-btn{
+      position:fixed;top:14px;right:14px;z-index:2000;
+      background:rgba(8,14,12,.9);border:1px solid rgba(0,200,168,.45);
+      border-radius:20px;
+      padding:5px 14px;font-size:12px;font-weight:700;color:var(--t);
+      letter-spacing:2px;cursor:pointer;transition:all .2s;
+      box-shadow:0 0 8px rgba(0,200,168,.2);
+      backdrop-filter:blur(4px);
+    }
+    #lang-btn:active{transform:scale(.95)}
+
+    /* ─── TOAST ─── */
+    #toast{
+      position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);
+      background:var(--dk2);border:1px solid var(--t);color:var(--t);
+      border-radius:24px;
+      padding:9px 22px;font-size:13px;font-weight:600;
+      opacity:0;transition:all .28s;pointer-events:none;z-index:9999;white-space:nowrap;
+      box-shadow:0 0 10px rgba(0,200,168,.25);letter-spacing:1px;
+    }
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* ─── COIN RAIN ─── */
+    #coin-rain{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+    .coin-drop{position:absolute;top:-60px;font-size:22px;animation:coin-fall linear forwards;opacity:0}
+
+    /* ─── BACK BUTTON ─── */
+    .btn-back{
+      background:none;border:none;color:rgba(136,180,168,.32);
+      font-size:12px;cursor:pointer;padding:8px 6px;
+      display:inline-flex;align-items:center;gap:5px;letter-spacing:1px;
+      transition:color .2s;line-height:1;
+    }
+    .btn-back:hover{color:rgba(0,200,168,.65)}
+    .btn-back:active{color:var(--t);transform:translateX(-2px)}
+    .btn-back svg{flex-shrink:0}
+    .btn-back-float{position:absolute;top:46px;left:20px;z-index:10}
+
+    /* ══════════════════════════════
+       WELCOME  ─ 澳門插畫 + 霓虹
+    ══════════════════════════════ */
+    #scr-welcome{
+      background:
+        repeating-linear-gradient(90deg,var(--sp) 0,var(--sp) 2px,transparent 2px,transparent 22px),
+        linear-gradient(175deg,#071a10 0%,#042010 40%,#062818 100%);
+    }
+    .macao-scene{position:absolute;bottom:0;left:0;width:100%;height:55%;z-index:0;pointer-events:none}
+    /* Neon corner brackets */
+    .nc{position:absolute;width:48px;height:48px;pointer-events:none;z-index:2}
+    .nc-tl{top:18px;left:18px}.nc-tr{top:18px;right:18px;transform:scaleX(-1)}
+    .nc-bl{bottom:18px;left:18px;transform:scaleY(-1)}.nc-br{bottom:18px;right:18px;transform:scale(-1,-1)}
+    /* Cinema light dots */
+    .cinema-dots{display:flex;gap:9px;justify-content:center;margin:10px 0}
+    .cdot{
+      width:7px;height:7px;border-radius:50%;
+      animation:cdot-blink 1.1s ease-in-out infinite alternate;
+    }
+    .cdot:nth-child(1){background:var(--g);box-shadow:0 0 5px var(--g)}
+    .cdot:nth-child(2){background:var(--o);box-shadow:0 0 5px var(--o);animation-delay:.18s}
+    .cdot:nth-child(3){background:var(--g);box-shadow:0 0 5px var(--g);animation-delay:.36s}
+    .cdot:nth-child(4){background:var(--t);box-shadow:0 0 5px var(--t);animation-delay:.54s}
+    .cdot:nth-child(5){background:var(--g);box-shadow:0 0 5px var(--g);animation-delay:.72s}
+    .cdot:nth-child(6){background:var(--o);box-shadow:0 0 5px var(--o);animation-delay:.9s}
+    .cdot:nth-child(7){background:var(--g);box-shadow:0 0 5px var(--g);animation-delay:1.08s}
+    /* Welcome inner */
+    .welcome-inner{
+      position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+      text-align:center;padding:28px 24px 48px;max-width:420px;width:100%;
+    }
+    .shrimp-emoji{
+      font-size:70px;display:block;margin-bottom:6px;
+      filter:drop-shadow(0 0 12px rgba(230,51,51,.55));
+      animation:float-up 3.2s ease-in-out infinite;
+    }
+    /* Gold + red dual neon sign — 澳門博覽 style */
+    .brand-sign{
+      border:2px solid var(--g);
+      border-radius:10px;
+      box-shadow:0 0 8px var(--g),0 0 22px rgba(245,200,66,.24),inset 0 0 10px rgba(245,200,66,.06);
+      padding:10px 28px 12px;margin-bottom:8px;
+      position:relative;
+      animation:neon-flicker 9s linear infinite;
+    }
+    .brand-sign::before,.brand-sign::after{
+      content:'';position:absolute;width:8px;height:8px;border-radius:50%;
+      background:var(--g);box-shadow:0 0 5px var(--g);
+    }
+    .brand-sign::before{top:-4px;left:-4px}
+    .brand-sign::after{bottom:-4px;right:-4px}
+    .brand-name{
+      font-size:50px;font-weight:900;color:var(--cr);letter-spacing:12px;line-height:1.1;
+      text-shadow:0 0 10px var(--g),0 0 24px rgba(245,200,66,.5);
+    }
+    .brand-en{font-size:10px;letter-spacing:5px;color:var(--g);text-transform:uppercase;margin-bottom:2px;text-shadow:0 0 5px var(--g);opacity:.75}
+    /* Gold + teal two-color neon divider */
+    .neon-divider{
+      width:100%;height:1px;margin:12px 0;
+      background:linear-gradient(to right,transparent,var(--g),var(--t),var(--g),transparent);
+      box-shadow:0 0 5px rgba(245,200,66,.35);
+    }
+    /* Gold cinema box (1.png poster style) */
+    .cinema-box{
+      border:2px solid var(--o);
+      border-radius:8px;
+      box-shadow:0 0 7px rgba(232,125,62,.3),0 0 18px rgba(232,125,62,.1);
+      padding:6px 20px;margin-bottom:8px;
+      position:relative;
+    }
+    .cinema-box::before{
+      content:'';position:absolute;inset:-1px;
+      background:linear-gradient(135deg,transparent 40%,rgba(245,200,66,.06) 100%);
+      pointer-events:none;
+    }
+    .cinema-box-label{font-size:11px;color:var(--o);letter-spacing:3px;text-shadow:0 0 5px var(--o)}
+    .welcome-tagline{font-size:13px;line-height:1.95;color:var(--txd);margin-bottom:10px}
+    .welcome-badge{
+      font-size:11px;color:var(--g);letter-spacing:2px;margin-bottom:24px;
+      padding:5px 16px;border:1px solid rgba(245,200,66,.3);border-radius:20px;
+      background:rgba(245,200,66,.05);text-shadow:0 0 5px rgba(245,200,66,.35);
+    }
+    /* Start button — gold neon pill */
+    .btn-start-neon{
+      padding:15px 42px;background:transparent;border:2px solid var(--g);
+      border-radius:50px;
+      font-size:17px;font-weight:700;color:var(--g);cursor:pointer;letter-spacing:5px;
+      box-shadow:0 0 12px rgba(245,200,66,.4),0 0 28px rgba(245,200,66,.14),inset 0 0 12px rgba(245,200,66,.06);
+      text-shadow:0 0 8px var(--g);transition:all .22s;
+      animation:neon-pulse-g 2.5s ease-in-out infinite;
+    }
+    .btn-start-neon:active{background:rgba(245,200,66,.12);transform:scale(.97)}
+    .ornament-neon{color:rgba(245,200,66,.22);font-size:15px;letter-spacing:8px;margin-top:14px}
+
+    /* ══════════════════════════════
+       QUESTION
+    ══════════════════════════════ */
+    #scr-question{
+      background:
+        repeating-linear-gradient(90deg,var(--sp) 0,var(--sp) 2px,transparent 2px,transparent 22px),
+        linear-gradient(180deg,#0a1510 0%,#080e0c 100%);
+      justify-content:flex-start;
+    }
+    .q-wrap{
+      position:relative;z-index:1;width:100%;min-height:100%;
+      display:flex;flex-direction:column;padding:0 20px 32px;max-width:480px;margin:0 auto;
+    }
+    .q-header{display:flex;align-items:center;justify-content:space-between;padding-top:46px;margin-bottom:14px}
+    .q-logo{font-size:16px;font-weight:700;color:var(--t);letter-spacing:3px;text-shadow:0 0 7px rgba(0,200,168,.45)}
+    .q-step{font-size:12px;color:var(--txdd);letter-spacing:2px;border:1px solid rgba(0,200,168,.18);border-radius:12px;padding:3px 10px}
+    /* Teal neon progress track */
+    .prog-bar{width:100%;height:3px;background:rgba(0,200,168,.1);border-radius:3px;margin-bottom:22px;overflow:hidden}
+    .prog-fill{
+      height:100%;border-radius:3px;transition:width .55s cubic-bezier(.4,0,.2,1);
+      background:linear-gradient(90deg,var(--t),var(--g));
+      box-shadow:0 0 6px var(--t),0 0 14px rgba(0,200,168,.35);
+    }
+    .q-card{flex:1;display:flex;flex-direction:column;transition:opacity .24s,transform .24s}
+    /* Gold neon tag badge (1.png style) */
+    .q-badge{
+      display:inline-flex;align-items:center;gap:6px;padding:4px 14px;
+      background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.4);border-radius:20px;
+      font-size:11px;color:var(--gl);letter-spacing:3px;margin-bottom:10px;width:fit-content;
+      text-shadow:0 0 5px rgba(245,200,66,.4);box-shadow:0 0 7px rgba(245,200,66,.1);
+    }
+    .q-num{font-size:12px;color:var(--txdd);margin-bottom:8px;letter-spacing:2px}
+    .q-text{font-size:19px;font-weight:700;color:var(--cr);line-height:1.5;margin-bottom:6px}
+    .q-sub{font-size:12px;color:var(--txd);margin-bottom:20px;line-height:1.6}
+    .opts{display:flex;flex-direction:column;gap:9px;flex:1}
+    .opt{
+      width:100%;padding:13px 16px;
+      background:rgba(255,255,255,.025);border:1px solid rgba(0,200,168,.12);border-radius:12px;
+      color:var(--cr);font-size:13px;line-height:1.5;text-align:left;cursor:pointer;
+      transition:all .22s;display:flex;gap:12px;align-items:flex-start;
+    }
+    .opt:active{transform:scale(.99)}
+    .opt.sel{
+      background:rgba(245,200,66,.07);
+      border-color:var(--g);border-left:3px solid var(--g);
+      box-shadow:0 0 12px rgba(245,200,66,.14);
+    }
+    .opt-letter{
+      min-width:26px;height:26px;background:rgba(245,200,66,.07);
+      border:1px solid rgba(245,200,66,.22);border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:700;color:var(--g);flex-shrink:0;transition:all .22s;
+    }
+    .opt.sel .opt-letter{background:var(--g);color:#060e0a;border-color:var(--g)}
+    .opt-main{font-weight:600;font-size:13px;display:block;margin-bottom:2px}
+    .opt-sub{font-size:11px;color:var(--txd);display:block}
+    .q-foot{margin-top:18px}
+    .btn-next{
+      width:100%;padding:15px;background:transparent;
+      border:2px solid rgba(0,200,168,.15);border-radius:50px;
+      font-size:15px;font-weight:700;color:rgba(0,200,168,.28);
+      cursor:pointer;letter-spacing:4px;transition:all .28s;pointer-events:none;
+    }
+    .btn-next.on{
+      color:var(--g);border-color:var(--g);pointer-events:all;
+      box-shadow:0 0 10px rgba(245,200,66,.28),0 0 22px rgba(245,200,66,.1),inset 0 0 8px rgba(245,200,66,.04);
+      text-shadow:0 0 7px var(--g);
+    }
+    .btn-next.on:active{transform:scale(.98);background:rgba(245,200,66,.07)}
+
+    /* ══════════════════════════════
+       LOADING
+    ══════════════════════════════ */
+    #scr-loading{
+      background:
+        repeating-linear-gradient(90deg,var(--sp) 0,var(--sp) 2px,transparent 2px,transparent 22px),
+        #060c0a;
+    }
+    .load-inner{
+      position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+      padding:40px 28px;width:100%;max-width:400px;
+    }
+    .load-title{
+      font-size:21px;font-weight:700;color:var(--cr);letter-spacing:5px;margin-bottom:5px;text-align:center;
+      text-shadow:0 0 8px var(--t),0 0 16px rgba(0,200,168,.25);
+    }
+    .load-sub{font-size:11px;color:var(--t);letter-spacing:4px;margin-bottom:30px;text-align:center;text-shadow:0 0 5px var(--t)}
+    /* Slot machine — neon arcade cabinet */
+    .slot{
+      width:100%;background:rgba(6,12,10,.92);
+      border:2px solid var(--t);border-radius:16px;padding:16px 16px 14px;
+      box-shadow:0 0 14px rgba(0,200,168,.28),0 0 40px rgba(0,200,168,.06),inset 0 0 18px rgba(0,0,0,.4);
+      margin-bottom:22px;
+    }
+    .slot::before{
+      content:'✦  MACAO FORTUNE ARCADE  ✦';display:block;text-align:center;
+      font-size:10px;letter-spacing:4px;color:var(--t);margin-bottom:12px;text-shadow:0 0 4px var(--t);
+    }
+    .slot-reels{display:flex;gap:8px;justify-content:center}
+    .slot-win{
+      width:80px;height:80px;overflow:hidden;border-radius:10px;
+      background:#04080a;border:1px solid rgba(0,200,168,.28);position:relative;
+    }
+    .slot-win::before,.slot-win::after{content:'';position:absolute;left:0;right:0;height:18px;z-index:2;pointer-events:none}
+    .slot-win::before{top:0;background:linear-gradient(to bottom,#04080a,transparent)}
+    .slot-win::after{bottom:0;background:linear-gradient(to top,#04080a,transparent)}
+    .reel{display:flex;flex-direction:column;align-items:center;animation:reel-spin linear infinite}
+    .reel-a{animation-duration:.42s}.reel-b{animation-duration:.57s}.reel-c{animation-duration:.36s}
+    @keyframes reel-spin{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+    .sym{width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0}
+    .slot-lights{display:flex;justify-content:center;gap:12px;margin-top:12px}
+    .slot-light{width:9px;height:9px;border-radius:50%;animation:blink .52s ease-in-out infinite alternate}
+    .sl1{background:var(--t);box-shadow:0 0 4px var(--t)}.sl2{background:var(--r);box-shadow:0 0 4px var(--r);animation-delay:.12s}
+    .sl3{background:var(--y);box-shadow:0 0 4px var(--y);animation-delay:.25s}.sl4{background:var(--t);box-shadow:0 0 4px var(--t);animation-delay:.38s}.sl5{background:var(--r);box-shadow:0 0 4px var(--r);animation-delay:.5s}
+    .load-pct{
+      font-size:30px;font-weight:700;letter-spacing:2px;margin-bottom:10px;color:var(--cr);
+      text-shadow:0 0 10px var(--t),0 0 20px rgba(0,200,168,.3);
+    }
+    .load-prog-wrap{width:100%;height:4px;background:rgba(0,200,168,.1);border-radius:4px;margin-bottom:14px;overflow:hidden}
+    .load-prog{height:100%;background:var(--t);width:0%;border-radius:4px;transition:width .22s ease;box-shadow:0 0 8px var(--t)}
+    .load-txt{font-size:13px;color:var(--t);letter-spacing:3px;text-align:center;min-height:18px;text-shadow:0 0 4px rgba(0,200,168,.4);animation:txt-pulse 1.4s ease-in-out infinite}
+
+    /* ══════════════════════════════
+       RESULT
+    ══════════════════════════════ */
+    #scr-result{
+      background:
+        repeating-linear-gradient(90deg,var(--sp) 0,var(--sp) 2px,transparent 2px,transparent 22px),
+        linear-gradient(180deg,#0c1510 0%,#080e0c 100%);
+      justify-content:flex-start;
+    }
+    .res-wrap{position:relative;z-index:1;width:100%;max-width:420px;margin:0 auto;padding:0 18px 50px}
+    .res-hd{text-align:center;padding:28px 0 14px}
+    .res-hd-sub{font-size:11px;color:var(--txdd);letter-spacing:4px;margin-bottom:4px}
+    .res-hd-main{font-size:17px;color:var(--t);font-weight:700;letter-spacing:4px;text-shadow:0 0 7px rgba(0,200,168,.35)}
+    /* Result card — neon cinema poster */
+    .result-card{
+      background:linear-gradient(160deg,#0e1812 0%,#0a1210 60%,#070e0c 100%);
+      border:1px solid rgba(0,200,168,.28);border-radius:18px;overflow:hidden;
+      box-shadow:0 0 22px rgba(0,200,168,.12),0 0 44px rgba(0,0,0,.5);
+      margin-bottom:16px;position:relative;
+    }
+    .result-card::before{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:repeating-linear-gradient(90deg,rgba(0,200,168,.02) 0,rgba(0,200,168,.02) 1px,transparent 1px,transparent 18px);
+    }
+    .rc-head{padding:18px 16px 12px;text-align:center;border-bottom:1px solid rgba(0,200,168,.12);position:relative;z-index:1}
+    .rc-logo{font-size:10px;color:rgba(0,200,168,.35);letter-spacing:4px;margin-bottom:10px}
+    .rc-icon{font-size:60px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 12px rgba(0,200,168,.35));animation:float-up 3s ease-in-out infinite}
+    .rc-type{font-size:30px;font-weight:900;letter-spacing:8px;margin-bottom:4px;line-height:1.1}
+    .rc-sub{font-size:13px;color:var(--txd);letter-spacing:5px}
+    .rc-body{padding:14px 14px 10px;position:relative;z-index:1}
+    .rc-sec{margin-bottom:14px}
+    .sec-lbl{
+      font-size:10px;letter-spacing:4px;text-transform:uppercase;
+      margin-bottom:9px;display:flex;align-items:center;gap:7px;
+    }
+    .sec-lbl::before{content:'▶';font-size:7px;flex-shrink:0}
+    .sec-lbl::after{content:'';flex:1;height:1px}
+    .sec-lbl.g{color:rgba(0,200,168,.55)}.sec-lbl.g::after{background:rgba(0,200,168,.1)}
+    .sec-lbl.au{color:rgba(245,200,66,.55)}.sec-lbl.au::after{background:rgba(245,200,66,.08)}
+    .tags{display:flex;flex-wrap:wrap;gap:6px}
+    .tag{padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:1px;border:1px solid;border-radius:20px}
+    .traits{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .trait{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txd)}
+    .trait::before{content:'─';color:rgba(0,200,168,.3);font-size:10px;flex-shrink:0}
+    .fortune-box{background:rgba(0,0,0,.28);border:1px solid rgba(0,200,168,.18);border-radius:12px;padding:14px}
+    .fortune-main{font-size:15px;font-weight:700;color:var(--cr);text-align:center;margin-bottom:11px;letter-spacing:1px}
+    .fortune-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .f-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+    .f-lbl{font-size:10px;color:var(--txd)}.f-val{font-size:11px;font-weight:700}
+    .f-strong{color:var(--t);text-shadow:0 0 4px rgba(0,200,168,.35)}.f-weak{color:rgba(110,110,110,.7)}
+    .career-box{
+      border-left:3px solid var(--r);border-radius:0 12px 12px 0;padding:13px 15px;
+      font-size:12px;line-height:1.85;color:var(--txd);font-style:italic;background:rgba(230,51,51,.04);
+    }
+    .rc-foot{
+      padding:10px 14px;border-top:1px solid rgba(0,200,168,.08);
+      display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;
+    }
+    .rc-foot-l{font-size:11px;color:rgba(0,200,168,.28);letter-spacing:1px}
+    .rc-foot-r{font-size:10px;color:rgba(255,176,32,.28)}
+    /* Action buttons */
+    .act-btns{display:flex;gap:10px;margin-bottom:16px}
+    .btn-save{
+      flex:1;padding:14px;background:rgba(0,200,168,.07);border:1px solid var(--t);border-radius:50px;
+      font-size:13px;font-weight:700;color:var(--t);cursor:pointer;letter-spacing:2px;transition:all .22s;
+      box-shadow:0 0 10px rgba(0,200,168,.18);text-shadow:0 0 5px rgba(0,200,168,.35);
+    }
+    .btn-save:active{transform:scale(.97);background:rgba(0,200,168,.14)}
+    .btn-share{
+      flex:1;padding:14px;background:rgba(230,51,51,.05);border:1px solid rgba(230,51,51,.42);border-radius:50px;
+      font-size:13px;font-weight:700;color:var(--rl);cursor:pointer;letter-spacing:2px;transition:all .22s;
+      box-shadow:0 0 8px rgba(230,51,51,.12);
+    }
+    .btn-share:active{transform:scale(.97);background:rgba(230,51,51,.1)}
+    .btn-retry{
+      width:100%;padding:13px;background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.07);border-radius:50px;
+      font-size:13px;color:var(--txdd);cursor:pointer;letter-spacing:3px;
+      transition:all .22s;margin-bottom:16px;
+    }
+    .btn-retry:active{transform:scale(.98)}
+    /* Email section */
+    .email-sec{
+      background:rgba(6,12,10,.8);border:1px solid rgba(0,200,168,.2);border-radius:16px;
+      padding:20px 18px;margin-bottom:16px;box-shadow:0 0 16px rgba(0,200,168,.06);
+    }
+    .email-title{font-size:16px;font-weight:700;color:var(--cr);text-align:center;margin-bottom:7px}
+    .email-title span{color:var(--g);text-shadow:0 0 5px rgba(245,200,66,.35)}
+    .email-desc{font-size:12px;color:var(--txd);text-align:center;line-height:1.7;margin-bottom:13px}
+    .email-perks{list-style:none;margin-bottom:13px}
+    .email-perks li{font-size:12px;color:var(--txd);padding:4px 0 4px 18px;position:relative}
+    .email-perks li::before{content:'›';position:absolute;left:0;color:var(--t);font-weight:700;font-size:14px;line-height:1.3}
+    .email-in{
+      width:100%;padding:13px 16px;background:rgba(0,0,0,.4);
+      border:1px solid rgba(0,200,168,.22);border-radius:50px;
+      font-size:14px;color:var(--cr);outline:none;transition:border-color .22s;margin-bottom:10px;
+      -webkit-appearance:none;letter-spacing:.5px;
+    }
+    .email-in:focus{border-color:var(--t);box-shadow:0 0 8px rgba(0,200,168,.18)}
+    .email-in::placeholder{color:rgba(136,180,168,.28)}
+    .btn-report{
+      width:100%;padding:14px;background:transparent;border:2px solid var(--t);border-radius:50px;
+      font-size:14px;font-weight:700;color:var(--t);letter-spacing:3px;cursor:pointer;transition:all .22s;
+      box-shadow:0 0 9px rgba(0,200,168,.22);text-shadow:0 0 5px rgba(0,200,168,.35);
+    }
+    .btn-report:hover{background:rgba(0,200,168,.07)}.btn-report:active{transform:scale(.98)}
+    .email-note{font-size:11px;color:var(--txdd);text-align:center;margin-top:9px;line-height:1.6}
+    .email-ok{display:none;text-align:center;padding:12px 0}
+    .email-ok-icon{font-size:42px;display:block;margin-bottom:8px}
+    .email-ok-main{font-size:14px;font-weight:700;color:var(--t);margin-bottom:7px;text-shadow:0 0 5px rgba(0,200,168,.35)}
+    .email-ok-sub{font-size:12px;color:var(--txd);line-height:1.7}
+    .ornament-neon-b{color:rgba(0,200,168,.18);font-size:13px;letter-spacing:6px;margin-bottom:14px;text-align:center}
+
+    /* ─── Responsive ─── */
+    @media(max-height:680px){
+      .q-header{padding-top:28px}.q-text{font-size:17px}.opt{padding:10px 12px}
+      .shrimp-emoji{font-size:56px}.brand-name{font-size:40px}
+    }
+    @media(max-height:580px){.q-sub{display:none}}
+  </style>
+</head>
+<body>
+
+<button id="lang-btn">繁體</button>
+<div id="toast"></div>
+<div id="coin-rain"></div>
+
+<!-- ══════════════════ WELCOME ══════════════════ -->
+<div id="scr-welcome" class="screen active">
+  <div class="ptc-layer" id="ptc-w"></div>
+
+  <!-- 澳門扁平插畫 SVG — 參考1.png(博覽會)+ 3.png(Kiehl's)風格 -->
+  <svg class="macao-scene" viewBox="0 0 420 270" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    <defs>
+      <filter id="gw"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="gs"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f5c842" stop-opacity=".55"/>
+        <stop offset="100%" stop-color="#f5c842" stop-opacity=".04"/>
+      </linearGradient>
+      <linearGradient id="jade1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0c8060" stop-opacity=".95"/>
+        <stop offset="100%" stop-color="#065038" stop-opacity=".9"/>
+      </linearGradient>
+      <linearGradient id="water1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00c8a8" stop-opacity=".35"/>
+        <stop offset="100%" stop-color="#00c8a8" stop-opacity=".08"/>
+      </linearGradient>
+    </defs>
+
+    <!-- ══ Ground / base ══ -->
+    <rect x="0" y="195" width="420" height="75" fill="#052018"/>
+
+    <!-- ══ Golden arch bridge band (1.png key element) ══ -->
+    <!-- Main arch -->
+    <path d="M-10 215 Q105 155 210 175 Q315 155 430 215" fill="none" stroke="#f5c842" stroke-width="5" opacity=".38"/>
+    <!-- Secondary arch (smaller, offset) -->
+    <path d="M-10 225 Q105 170 210 188 Q315 170 430 225" fill="none" stroke="#e87d3e" stroke-width="2.5" opacity=".25"/>
+    <!-- Arch glow -->
+    <path d="M-10 215 Q105 155 210 175 Q315 155 430 215" fill="none" stroke="#f5c842" stroke-width="10" opacity=".06" filter="url(#gw)"/>
+
+    <!-- ══ Teal wavy water / ground stripe (1.png blue water) ══ -->
+    <path d="M0 198 Q52 190 105 198 Q157 206 210 198 Q262 190 315 198 Q367 206 420 198 L420 215 L0 215Z" fill="url(#water1)" opacity=".7"/>
+
+    <!-- ══ Grand Lisboa Hotel (left) — flat illustration from 1.png ══ -->
+    <!-- Base building -->
+    <rect x="18" y="100" width="44" height="100" fill="#1a3028" opacity=".9"/>
+    <rect x="20" y="102" width="40" height="96" fill="#0f2a1e" opacity=".8"/>
+    <!-- Upper tower shaft -->
+    <rect x="28" y="68" width="24" height="38" fill="#1a3028"/>
+    <!-- Lotus crown (iconic, from 1.png + 3.png) - AMBER/ORANGE -->
+    <ellipse cx="40" cy="64" rx="20" ry="6"  fill="#e87d3e" opacity=".82"/>
+    <ellipse cx="40" cy="57" rx="16" ry="6"  fill="#e87d3e" opacity=".88"/>
+    <ellipse cx="40" cy="50" rx="12" ry="5.5" fill="#f5c842" opacity=".88"/>
+    <ellipse cx="40" cy="43" rx="8"  ry="5"  fill="#f5c842" opacity=".92"/>
+    <ellipse cx="40" cy="38" rx="5"  ry="4"  fill="#f5c842" opacity=".95"/>
+    <line x1="40" y1="33" x2="40" y2="38" stroke="#f5c842" stroke-width="2.5" opacity=".9" filter="url(#gs)"/>
+    <!-- Windows rows -->
+    <rect x="23" y="115" width="5" height="6" fill="#f5c842" opacity=".3" rx="1"/>
+    <rect x="31" y="115" width="5" height="6" fill="#00c8a8" opacity=".28" rx="1"/>
+    <rect x="39" y="115" width="5" height="6" fill="#f5c842" opacity=".3" rx="1"/>
+    <rect x="47" y="115" width="5" height="6" fill="#00c8a8" opacity=".25" rx="1"/>
+    <rect x="23" y="128" width="5" height="5" fill="#e87d3e" opacity=".25" rx="1"/>
+    <rect x="31" y="128" width="5" height="5" fill="#f5c842" opacity=".2"  rx="1"/>
+    <rect x="39" y="128" width="5" height="5" fill="#00c8a8" opacity=".22" rx="1"/>
+    <rect x="47" y="128" width="5" height="5" fill="#f5c842" opacity=".2"  rx="1"/>
+    <rect x="23" y="140" width="5" height="5" fill="#f5c842" opacity=".18" rx="1"/>
+    <rect x="31" y="140" width="5" height="5" fill="#00c8a8" opacity=".18" rx="1"/>
+    <rect x="39" y="140" width="5" height="5" fill="#f5c842" opacity=".18" rx="1"/>
+    <rect x="47" y="140" width="5" height="5" fill="#e87d3e" opacity=".18" rx="1"/>
+    <!-- Gold glow on lotus crown -->
+    <ellipse cx="40" cy="50" rx="14" ry="8" fill="none" stroke="#f5c842" stroke-width="1" opacity=".3" filter="url(#gw)"/>
+
+    <!-- ══ 大三巴 St. Paul's Ruins — center, FLAT ILLUSTRATION (1.png teal/gold) ══ -->
+    <!-- Tier 5 base (widest) -->
+    <rect x="128" y="170" width="140" height="28" fill="url(#jade1)" opacity=".92"/>
+    <!-- Steps decorative line -->
+    <line x1="128" y1="170" x2="268" y2="170" stroke="#f5c842" stroke-width="1" opacity=".4"/>
+    <!-- Tier 4 — arch windows row -->
+    <rect x="136" y="144" width="124" height="28" fill="url(#jade1)"/>
+    <!-- Arch windows tier 4 (open, dark) -->
+    <path d="M146 172 L146 153 Q153 143 160 153 L160 172" fill="rgba(0,0,0,.45)"/>
+    <path d="M166 172 L166 153 Q173 143 180 153 L180 172" fill="rgba(0,0,0,.45)"/>
+    <path d="M186 172 L186 153 Q193 143 200 153 L200 172" fill="rgba(0,0,0,.45)"/>
+    <path d="M206 172 L206 153 Q213 143 220 153 L220 172" fill="rgba(0,0,0,.45)"/>
+    <path d="M226 172 L226 153 Q233 143 240 153 L240 172" fill="rgba(0,0,0,.45)"/>
+    <path d="M246 172 L246 153 Q253 143 260 153 L260 172" fill="rgba(0,0,0,.4)"/>
+    <!-- Gold trim T4 top -->
+    <line x1="136" y1="144" x2="260" y2="144" stroke="#f5c842" stroke-width="1.5" opacity=".55"/>
+    <!-- Tier 3 — columns -->
+    <rect x="148" y="120" width="100" height="26" fill="#0c8060" opacity=".85"/>
+    <!-- Column dividers gold -->
+    <line x1="162" y1="120" x2="162" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <line x1="177" y1="120" x2="177" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <line x1="192" y1="120" x2="192" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <line x1="207" y1="120" x2="207" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <line x1="222" y1="120" x2="222" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <line x1="237" y1="120" x2="237" y2="144" stroke="#f5c842" stroke-width=".8" opacity=".4"/>
+    <!-- Arch windows tier 3 -->
+    <path d="M155 144 L155 129 Q161 120 167 129 L167 144" fill="rgba(0,0,0,.35)"/>
+    <path d="M171 144 L171 129 Q177 120 183 129 L183 144" fill="rgba(0,0,0,.35)"/>
+    <path d="M187 144 L187 129 Q193 120 199 129 L199 144" fill="rgba(0,0,0,.35)"/>
+    <path d="M203 144 L203 129 Q209 120 215 129 L215 144" fill="rgba(0,0,0,.35)"/>
+    <path d="M219 144 L219 129 Q225 120 231 129 L231 144" fill="rgba(0,0,0,.3)"/>
+    <line x1="148" y1="120" x2="248" y2="120" stroke="#f5c842" stroke-width="1.2" opacity=".48"/>
+    <!-- Tier 2 — narrower -->
+    <rect x="162" y="98" width="72" height="24" fill="#0a6b50" opacity=".9"/>
+    <line x1="162" y1="98" x2="234" y2="98" stroke="#f5c842" stroke-width="1.5" opacity=".52"/>
+    <!-- Rose window (circular) -->
+    <circle cx="198" cy="110" r="7" fill="none" stroke="#f5c842" stroke-width="1.5" opacity=".6"/>
+    <circle cx="198" cy="110" r="3.5" fill="#f5c842" opacity=".25"/>
+    <!-- Inner cross lines of rose window -->
+    <line x1="198" y1="103" x2="198" y2="117" stroke="#f5c842" stroke-width=".8" opacity=".45"/>
+    <line x1="191" y1="110" x2="205" y2="110" stroke="#f5c842" stroke-width=".8" opacity=".45"/>
+    <!-- Tier 1 — triangular pediment (top gable) -->
+    <polygon points="170,98 198,72 226,98" fill="#0c8060" opacity=".9"/>
+    <!-- Pediment outline gold -->
+    <polyline points="170,98 198,72 226,98" fill="none" stroke="#f5c842" stroke-width="1.2" opacity=".55"/>
+    <!-- Niche statues hint (from 1.png) -->
+    <rect x="185" y="80" width="5" height="10" fill="#f5c842" opacity=".18" rx="1"/>
+    <rect x="193" y="78" width="5" height="12" fill="#f5c842" opacity=".22" rx="1"/>
+    <rect x="201" y="80" width="5" height="10" fill="#f5c842" opacity=".18" rx="1"/>
+    <!-- Cross on top -->
+    <line x1="198" y1="68" x2="198" y2="56" stroke="#f5c842" stroke-width="2.5" opacity=".85" filter="url(#gs)"/>
+    <line x1="192" y1="62" x2="204" y2="62" stroke="#f5c842" stroke-width="2.5" opacity=".85" filter="url(#gs)"/>
+    <!-- Gold halo glow around cross -->
+    <circle cx="198" cy="62" r="7" fill="none" stroke="#f5c842" stroke-width="1" opacity=".35" filter="url(#gw)"/>
+
+    <!-- ══ Venetian Macao (right) — rounded arch colonnade (1.png style) ══ -->
+    <rect x="305" y="130" width="115" height="70" fill="#072e20" opacity=".88"/>
+    <rect x="305" y="130" width="115" height="5"  fill="#f5c842" opacity=".3"/>
+    <!-- Arch colonnade windows -->
+    <path d="M313 200 L313 152 Q321 140 329 152 L329 200" fill="rgba(0,200,168,.22)"/>
+    <path d="M335 200 L335 152 Q343 140 351 152 L351 200" fill="rgba(0,200,168,.2)"/>
+    <path d="M357 200 L357 152 Q365 140 373 152 L373 200" fill="rgba(0,200,168,.18)"/>
+    <path d="M379 200 L379 152 Q387 140 395 152 L395 200" fill="rgba(0,200,168,.15)"/>
+    <!-- Venetian decorative band -->
+    <line x1="305" y1="148" x2="420" y2="148" stroke="#f5c842" stroke-width=".8" opacity=".35"/>
+    <!-- Venetian roof trim -->
+    <rect x="308" y="127" width="110" height="6" fill="#0a5040" opacity=".7"/>
+    <line x1="308" y1="127" x2="418" y2="127" stroke="#e87d3e" stroke-width="1" opacity=".4"/>
+
+    <!-- ══ Macau Lotus (3.png inspired) — left side decorative ══ -->
+    <g transform="translate(92,162)" opacity=".72">
+      <!-- Stem -->
+      <line x1="0" y1="28" x2="0" y2="8" stroke="#0a6b50" stroke-width="2"/>
+      <!-- Leaves -->
+      <ellipse cx="-8" cy="15" rx="6" ry="14" fill="#0c8060" opacity=".7" transform="rotate(-40,-8,20)"/>
+      <ellipse cx="8"  cy="15" rx="6" ry="14" fill="#0c8060" opacity=".7" transform="rotate(40,8,20)"/>
+      <!-- Petals -->
+      <ellipse cx="-10" cy="4" rx="6" ry="14" fill="#00c8a8" opacity=".75" transform="rotate(-30 -10 14)"/>
+      <ellipse cx="0"   cy="2" rx="6" ry="15" fill="#00c8a8" opacity=".82"/>
+      <ellipse cx="10"  cy="4" rx="6" ry="14" fill="#00c8a8" opacity=".75" transform="rotate(30 10 14)"/>
+      <ellipse cx="-16" cy="8" rx="5" ry="12" fill="#065038" opacity=".55" transform="rotate(-55 -16 18)"/>
+      <ellipse cx="16"  cy="8" rx="5" ry="12" fill="#065038" opacity=".55" transform="rotate(55 16 18)"/>
+      <!-- Center bud -->
+      <ellipse cx="0" cy="6" rx="4" ry="5" fill="#e87d3e" opacity=".85"/>
+      <ellipse cx="0" cy="4" rx="2.5" ry="3" fill="#f5c842" opacity=".8"/>
+    </g>
+
+    <!-- ══ Small lotus right (Macau flag symbol) ══ -->
+    <g transform="translate(388,168) scale(0.55)" opacity=".55">
+      <line x1="0" y1="25" x2="0" y2="5" stroke="#0a6b50" stroke-width="2.5"/>
+      <ellipse cx="-8" cy="12" rx="5" ry="12" fill="#0c8060" opacity=".7" transform="rotate(-35,-8,18)"/>
+      <ellipse cx="8"  cy="12" rx="5" ry="12" fill="#0c8060" opacity=".7" transform="rotate(35,8,18)"/>
+      <ellipse cx="-9" cy="2"  rx="5" ry="13" fill="#00c8a8" opacity=".7" transform="rotate(-28 -9 12)"/>
+      <ellipse cx="0"  cy="0"  rx="5" ry="14" fill="#00c8a8" opacity=".78"/>
+      <ellipse cx="9"  cy="2"  rx="5" ry="13" fill="#00c8a8" opacity=".7" transform="rotate(28 9 12)"/>
+      <ellipse cx="0"  cy="3"  rx="3.5" ry="4.5" fill="#e87d3e" opacity=".82"/>
+    </g>
+
+    <!-- ══ Neon sign elements (2.png inspired, mixed in) ══ -->
+    <!-- Gold neon sign on left building -->
+    <rect x="8" y="162" width="46" height="14" fill="#0c1a10" stroke="#f5c842" stroke-width="1" opacity=".7"/>
+    <text x="31" y="173" text-anchor="middle" fill="#ffe788" font-size="7" font-weight="bold" opacity=".88">澳 門 金 光</text>
+    <!-- Teal neon sign above lotus -->
+    <rect x="80" y="118" width="52" height="12" fill="#060e0a" stroke="#00c8a8" stroke-width="1" opacity=".65"/>
+    <text x="106" y="128" text-anchor="middle" fill="#7ffde0" font-size="7" opacity=".75">財 運 測 算</text>
+    <!-- Red vertical neon — right of Venetian -->
+    <rect x="294" y="140" width="10" height="48" fill="#140808" stroke="#e63333" stroke-width="1" opacity=".65"/>
+    <text x="299" y="155" text-anchor="middle" fill="#ff7070" font-size="6.5" font-weight="bold" opacity=".8">命</text>
+    <text x="299" y="166" text-anchor="middle" fill="#ff7070" font-size="6.5" font-weight="bold" opacity=".8">格</text>
+    <text x="299" y="177" text-anchor="middle" fill="#ff7070" font-size="6.5" font-weight="bold" opacity=".8">占</text>
+    <!-- Diamond neon (2.png 安排-style) -->
+    <polygon points="270,130 284,144 270,158 256,144" fill="#060e0a" stroke="#f5c842" stroke-width="1.2" opacity=".65"/>
+    <text x="270" y="149" text-anchor="middle" fill="#ffe788" font-size="8" font-weight="bold" opacity=".85">靈</text>
+    <!-- Teal sign on Venetian -->
+    <rect x="308" y="118" width="44" height="11" fill="#060e0a" stroke="#00c8a8" stroke-width="1" opacity=".55"/>
+    <text x="330" y="127" text-anchor="middle" fill="#7ffde0" font-size="6.5" opacity=".7">大 吉 大 利</text>
+
+    <!-- ══ Traffic light (2.png inspired) ══ -->
+    <rect x="125" y="152" width="9" height="46" fill="#0a1210" stroke="#333" stroke-width=".5"/>
+    <rect x="120" y="148" width="18" height="38" fill="#0a1210" stroke="#00c8a8" stroke-width=".8" rx="2" opacity=".6"/>
+    <circle cx="129" cy="154" r="4" fill="#e63333" opacity=".85" filter="url(#gs)"/>
+    <circle cx="129" cy="164" r="4" fill="#f5c842" opacity=".5"/>
+    <circle cx="129" cy="174" r="4" fill="#00c8a8" opacity=".75" filter="url(#gs)"/>
+
+    <!-- ══ Teal stripe floor (2.png key element) ══ -->
+    <line x1="0" y1="205" x2="420" y2="205" stroke="#00c8a8" stroke-width="1.5" opacity=".2"/>
+    <line x1="0" y1="215" x2="420" y2="215" stroke="#00c8a8" stroke-width="1.5" opacity=".15"/>
+    <line x1="0" y1="225" x2="420" y2="225" stroke="#00c8a8" stroke-width="1.2" opacity=".1"/>
+    <line x1="0" y1="235" x2="420" y2="235" stroke="#00c8a8" stroke-width="1"   opacity=".07"/>
+    <line x1="0" y1="248" x2="420" y2="248" stroke="#00c8a8" stroke-width="1"   opacity=".04"/>
+    <!-- Gold stripe accent -->
+    <line x1="0" y1="200" x2="420" y2="200" stroke="#f5c842" stroke-width="1.2" opacity=".18"/>
+
+    <!-- ══ Bokeh glow dots ══ -->
+    <circle cx="75"  cy="45"  r="2.5" fill="#f5c842" opacity=".4"  filter="url(#gs)"/>
+    <circle cx="290" cy="55"  r="2"   fill="#00c8a8" opacity=".42" filter="url(#gs)"/>
+    <circle cx="330" cy="100" r="1.5" fill="#e87d3e" opacity=".5"/>
+    <circle cx="138" cy="50"  r="2"   fill="#f5c842" opacity=".38"/>
+    <circle cx="415" cy="85"  r="2.5" fill="#e63333" opacity=".35" filter="url(#gs)"/>
+    <circle cx="58"  cy="185" r="1.5" fill="#00c8a8" opacity=".4"/>
+    <circle cx="250" cy="42"  r="2"   fill="#f5c842" opacity=".32"/>
+  </svg>
+
+  <!-- Neon corner brackets — gold + teal -->
+  <svg class="nc nc-tl" viewBox="0 0 48 48"><path d="M4,44 L4,4 L44,4" fill="none" stroke="#f5c842" stroke-width="2" opacity=".55"/><circle cx="4" cy="4" r="3" fill="#f5c842" opacity=".75"/></svg>
+  <svg class="nc nc-tr" viewBox="0 0 48 48"><path d="M4,44 L4,4 L44,4" fill="none" stroke="#e87d3e" stroke-width="2" opacity=".55"/><circle cx="4" cy="4" r="3" fill="#e87d3e" opacity=".75"/></svg>
+  <svg class="nc nc-bl" viewBox="0 0 48 48"><path d="M4,44 L4,4 L44,4" fill="none" stroke="#00c8a8" stroke-width="2" opacity=".38"/><circle cx="4" cy="4" r="3" fill="#00c8a8" opacity=".5"/></svg>
+  <svg class="nc nc-br" viewBox="0 0 48 48"><path d="M4,44 L4,4 L44,4" fill="none" stroke="#f5c842" stroke-width="2" opacity=".38"/><circle cx="4" cy="4" r="3" fill="#f5c842" opacity=".5"/></svg>
+
+  <div class="welcome-inner">
+    <span class="shrimp-emoji">🦐</span>
+    <div class="brand-sign">
+      <div class="brand-name" id="w-brand">靈 蝦</div>
+    </div>
+    <div class="brand-en">MACAU · FORTUNE ORACLE</div>
+    <div class="neon-divider"></div>
+    <div class="cinema-dots">
+      <span class="cdot"></span><span class="cdot"></span><span class="cdot"></span>
+      <span class="cdot"></span><span class="cdot"></span><span class="cdot"></span><span class="cdot"></span>
+    </div>
+    <div class="cinema-box">
+      <div class="cinema-box-label" id="w-macau-badge">澳門威尼斯人 · 財運測評系統</div>
+    </div>
+    <p class="welcome-tagline" id="w-tagline">
+      源自澳門威尼斯人的神秘傳承<br>七問定天機，洞悉你的財運命格
+    </p>
+    <div class="welcome-badge" id="w-badge">✦ 專業創業者財富格局測評 ✦</div>
+    <div class="cinema-dots">
+      <span class="cdot"></span><span class="cdot"></span><span class="cdot"></span>
+      <span class="cdot"></span><span class="cdot"></span><span class="cdot"></span><span class="cdot"></span>
+    </div>
+    <button class="btn-start-neon" id="btn-start">開 始 測 算</button>
+    <div class="ornament-neon">─ · ─ · ─</div>
+  </div>
+</div>
+
+<!-- ══════════════════ QUESTION ══════════════════ -->
+<div id="scr-question" class="screen">
+  <div class="ptc-layer" id="ptc-q"></div>
+  <div class="q-wrap">
+    <div class="q-header">
+      <button class="btn-back" id="btn-back-q" aria-label="返回">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="back-q-txt">返回</span>
+      </button>
+      <div class="q-logo" id="q-logo">🦐 靈蝦</div>
+      <div class="q-step" id="q-step">1 / 7</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="q-card" id="q-card">
+      <div class="q-badge" id="q-badge">AI態度</div>
+      <div class="q-num" id="q-num">第 1 題</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-sub" id="q-sub"></div>
+      <div class="opts" id="q-opts"></div>
+    </div>
+    <div class="q-foot">
+      <button class="btn-next" id="btn-next">下 一 題</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ LOADING ══════════════════ -->
+<div id="scr-loading" class="screen">
+  <div class="ptc-layer" id="ptc-l"></div>
+  <button class="btn-back btn-back-float" id="btn-back-l" aria-label="返回">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="back-l-txt">返回</span>
+  </button>
+  <div class="load-inner">
+    <div class="load-title" id="l-title">⚡ 正在測算...</div>
+    <div class="load-sub" id="l-sub">澳門命理引擎分析中</div>
+    <div class="slot">
+      <div class="slot-reels">
+        <div class="slot-win"><div class="reel reel-a" id="reel-a"></div></div>
+        <div class="slot-win"><div class="reel reel-b" id="reel-b"></div></div>
+        <div class="slot-win"><div class="reel reel-c" id="reel-c"></div></div>
+      </div>
+      <div class="slot-lights">
+        <div class="slot-light sl1"></div><div class="slot-light sl2"></div>
+        <div class="slot-light sl3"></div><div class="slot-light sl4"></div><div class="slot-light sl5"></div>
+      </div>
+    </div>
+    <div class="load-pct" id="load-pct">0%</div>
+    <div class="load-prog-wrap"><div class="load-prog" id="load-prog"></div></div>
+    <div class="load-txt" id="load-txt">正在測算命格...</div>
+  </div>
+</div>
+
+<!-- ══════════════════ RESULT ══════════════════ -->
+<div id="scr-result" class="screen">
+  <div class="ptc-layer" id="ptc-r"></div>
+  <!-- 結果頁頂部不顯示返回按鈕，底部有重新測算入口 -->
+  <div class="res-wrap">
+    <div class="res-hd">
+      <div class="res-hd-sub" id="r-hd-sub">靈蝦 · 澳門財運命格</div>
+      <div class="res-hd-main" id="r-hd-main">✦ 您的專屬命格報告 ✦</div>
+    </div>
+    <div class="result-card" id="result-card">
+      <div class="rc-head" id="rc-head">
+        <div class="rc-logo" id="rc-logo">🦐 靈 蝦 · MACAU FORTUNE ORACLE</div>
+        <span class="rc-icon" id="rc-icon">⚡</span>
+        <div class="rc-type" id="rc-type">天機型</div>
+        <div class="rc-sub" id="rc-sub">趨勢獵手</div>
+      </div>
+      <div class="rc-body">
+        <div class="rc-sec"><div class="sec-lbl g" id="sec-tags-lbl">核心標籤</div><div class="tags" id="rc-tags"></div></div>
+        <div class="rc-sec"><div class="sec-lbl au" id="sec-traits-lbl">典型特徵</div><div class="traits" id="rc-traits"></div></div>
+        <div class="rc-sec"><div class="sec-lbl g" id="sec-fortune-lbl">財運格局</div><div class="fortune-box" id="rc-fortune"></div></div>
+        <div class="rc-sec"><div class="sec-lbl au" id="sec-career-lbl">事業畫像</div><div class="career-box" id="rc-career"></div></div>
+      </div>
+      <div class="rc-foot">
+        <div class="rc-foot-l" id="rc-foot-l">🦐 靈蝦命格 · 澳門威尼斯人</div>
+        <div class="rc-foot-r" id="rc-date"></div>
+      </div>
+    </div>
+    <div class="act-btns">
+      <button class="btn-save" id="btn-save">📷 保存圖片</button>
+      <button class="btn-share" id="btn-share">🔗 分享結果</button>
+    </div>
+    <div class="email-sec">
+      <div class="email-title" id="e-title">獲取 <span>免費深度報告</span></div>
+      <p class="email-desc" id="e-desc">基於您的命格類型，為您生成<br><strong>專屬創業者財富路徑分析報告</strong></p>
+      <ul class="email-perks" id="e-perks">
+        <li id="ep1">您的命格類型深度解析（20+ 頁）</li>
+        <li id="ep2">適合您的具體創業賽道建議</li>
+        <li id="ep3">澳門視角的財富增長路徑圖</li>
+        <li id="ep4">同類型成功案例與成長策略</li>
+      </ul>
+      <div id="email-form">
+        <input type="email" class="email-in" id="email-in" placeholder="請輸入您的郵箱地址">
+        <button class="btn-report" id="btn-report">免費獲取深度報告 →</button>
+        <p class="email-note" id="e-note">我們承諾不發送垃圾郵件 · 隨時可取消訂閱</p>
+      </div>
+      <div class="email-ok" id="email-ok">
+        <span class="email-ok-icon">✉️</span>
+        <div class="email-ok-main" id="e-ok-main">報告已發送到您的郵箱！</div>
+        <div class="email-ok-sub" id="e-ok-sub">通常5分鐘內到達<br>如未收到，請檢查垃圾郵件文件夾</div>
+      </div>
+    </div>
+    <button class="btn-retry" id="btn-retry">↩ 重新測算</button>
+    <div class="ornament-neon-b">─ · 靈蝦 · 澳門威尼斯人 · ─</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  LANGUAGE  (0=简体, 1=繁体)
+// ═══════════════════════════════════════
+let li = 1; // default: 繁體
+
+function L(arr){ return Array.isArray(arr) ? arr[li] : arr }
+
+const UI = {
+  langBtn:      ['繁體','简体'],
+  brandName:    ['灵 虾','靈 蝦'],
+  macauBadge:   ['澳门威尼斯人 · 财运测评系统','澳門威尼斯人 · 財運測評系統'],
+  tagline:      ['源自澳门威尼斯人的神秘传承<br>七问定天机，洞悉你的财运命格',
+                 '源自澳門威尼斯人的神秘傳承<br>七問定天機，洞悉你的財運命格'],
+  welcomeBadge: ['✦ 专业创业者财富格局测评 ✦','✦ 專業創業者財富格局測評 ✦'],
+  startBtn:     ['开 始 测 算','開 始 測 算'],
+  qLogo:        ['🦐 灵虾','🦐 靈蝦'],
+  nextBtn:      ['下 一 题','下 一 題'],
+  submitBtn:    ['查 看 命 格 ✦','查 看 命 格 ✦'],
+  loadTitle:    ['⚡ 正在测算...','⚡ 正在測算...'],
+  loadSub:      ['澳门命理引擎分析中','澳門命理引擎分析中'],
+  loadTexts:    [
+    ['正在测算命格...','分析财运走势...','解码创业能量...','匹配澳门命理...','生成专属报告...','命格锁定中...'],
+    ['正在測算命格...','分析財運走勢...','解碼創業能量...','匹配澳門命理...','生成專屬報告...','命格鎖定中...']
+  ],
+  doneText:     ['命格确定！✦','命格確定！✦'],
+  resHdSub:     ['灵虾 · 澳门财运命格','靈蝦 · 澳門財運命格'],
+  resHdMain:    ['✦ 您的专属命格报告 ✦','✦ 您的專屬命格報告 ✦'],
+  rcLogo:       ['🦐 灵 虾 · MACAU FORTUNE ORACLE','🦐 靈 蝦 · MACAU FORTUNE ORACLE'],
+  secTags:      ['核心标签','核心標籤'],
+  secTraits:    ['典型特征','典型特徵'],
+  secFortune:   ['财运格局','財運格局'],
+  secCareer:    ['事业画像','事業畫像'],
+  btnSave:      ['📷 保存图片','📷 保存圖片'],
+  btnShare:     ['🔗 分享结果','🔗 分享結果'],
+  btnRetry:     ['↩ 重新测算','↩ 重新測算'],
+  rcFootL:      ['🦐 灵虾命格 · 澳门威尼斯人','🦐 靈蝦命格 · 澳門威尼斯人'],
+  eTitle:       ['获取 <span>免费深度报告</span>','獲取 <span>免費深度報告</span>'],
+  eDesc:        ['基于您的命格类型，为您生成<br><strong>专属创业者财富路径分析报告</strong>',
+                 '基於您的命格類型，為您生成<br><strong>專屬創業者財富路徑分析報告</strong>'],
+  ePerk1:       ['您的命格类型深度解析（20+ 页）','您的命格類型深度解析（20+ 頁）'],
+  ePerk2:       ['适合您的具体创业赛道建议','適合您的具體創業賽道建議'],
+  ePerk3:       ['澳门视角的财富增长路径图','澳門視角的財富增長路徑圖'],
+  ePerk4:       ['同类型成功案例与成长策略','同類型成功案例與成長策略'],
+  ePlaceholder: ['请输入您的邮箱地址','請輸入您的郵箱地址'],
+  eBtnReport:   ['免费获取深度报告 →','免費獲取深度報告 →'],
+  eBtnSending:  ['发送中...','發送中...'],
+  eNote:        ['我们承诺不发送垃圾邮件 · 随时可取消订阅','我們承諾不發送垃圾郵件 · 隨時可取消訂閱'],
+  eOkMain:      ['报告已发送到您的邮箱！','報告已發送到您的郵箱！'],
+  eOkSub:       ['通常5分钟内到达<br>如未收到，请检查垃圾邮件文件夹',
+                 '通常5分鐘內到達<br>如未收到，請檢查垃圾郵件文件夾'],
+  tGenImg:      ['正在生成图片...','正在生成圖片...'],
+  tSaved:       ['图片已保存！','圖片已保存！'],
+  tLongPress:   ['长按图片 → 存储到相册','長按圖片 → 存儲到相冊'],
+  tScreenshot:  ['请截图保存结果','請截圖保存結果'],
+  tCopied:      ['分享文案已复制到剪贴板','分享文案已複製到剪貼板'],
+  tEmailErr:    ['请输入有效邮箱地址','請輸入有效郵箱地址'],
+  tEmailOk:     ['报告已发送！','報告已發送！'],
+};
+
+const QS = [
+  {
+    badge:['AI态度','AI態度'], num:['第 1 题','第 1 題'],
+    text:['你对AI浪潮的总体判断是？','你對AI浪潮的總體判斷是？'],
+    sub:['选一个最接近你内心真实想法的选项','選一個最接近你內心真實想法的選項'],
+    opts:[
+      {m:['全力拥抱','全力擁抱'],s:['AI将大幅提升个人与组织效率，是时代性机会','AI將大幅提升個人與組織效率，是時代性機會']},
+      {m:['理性乐观','理性樂觀'],s:['利大于弊，但需要合理治理与边界规范','利大於弊，但需要合理治理與邊界規範']},
+      {m:['谨慎观望','謹慎觀望'],s:['热度很高，但真实商业价值仍需时间验证','熱度很高，但真實商業價值仍需時間驗證']},
+      {m:['保持警惕','保持警惕'],s:['失业冲击、隐私风险、幻觉问题不可小觑','失業衝擊、隱私風險、幻覺問題不可小覷']}
+    ]
+  },
+  {
+    badge:['产业视野','產業視野'], num:['第 2 题','第 2 題'],
+    text:['你最看好哪个产业方向？','你最看好哪個產業方向？'],
+    sub:['选择最让你兴奋、最愿意深耕的赛道','選擇最讓你興奮、最願意深耕的賽道'],
+    opts:[
+      {m:['传统制造业升级','傳統製造業升級'],s:['自动化改造·精益生产·国产替代·供应链优化','自動化改造·精益生產·國產替代·供應鏈優化']},
+      {m:['人工智能产业','人工智能產業'],s:['大模型·智能体·AI应用落地·数智化转型','大模型·智能體·AI應用落地·數智化轉型']},
+      {m:['新能源与储能','新能源與儲能'],s:['光伏·风电·储能·充换电·绿色转型','光伏·風電·儲能·充換電·綠色轉型']},
+      {m:['生物医药与健康','生物醫藥與健康'],s:['创新药·医疗器械·康养服务·大健康生态','創新藥·醫療器械·康養服務·大健康生態']}
+    ]
+  },
+  {
+    badge:['财富路径','財富路徑'], num:['第 3 题','第 3 題'],
+    text:['你更倾向哪种赚钱方式？','你更傾向哪種賺錢方式？'],
+    sub:['最能描述你理想财富来源的选项','最能描述你理想財富來源的選項'],
+    opts:[
+      {m:['稳定现金流型','穩定現金流型'],s:['工资·咨询服务·长期合同订单·可预期收入','工資·諮詢服務·長期合同訂單·可預期收入']},
+      {m:['创业经营型','創業經營型'],s:['自己做产品或公司·从0到1·规模化复利','自己做產品或公司·從0到1·規模化複利']},
+      {m:['投资增值型','投資增值型'],s:['股权投资·基金·二级市场·让钱为你工作','股權投資·基金·二級市場·讓錢為你工作']},
+      {m:['资产积累型','資產積累型'],s:['房产·固定资产·版权·持续增值的硬资产','房產·固定資產·版權·持續增值的硬資產']}
+    ]
+  },
+  {
+    badge:['融资偏好','融資偏好'], num:['第 4 题','第 4 題'],
+    text:['你更倾向哪种融资与资本策略？','你更傾向哪種融資與資本策略？'],
+    sub:['面对公司发展需要钱时，你的第一反应','面對公司發展需要錢時，你的第一反應'],
+    opts:[
+      {m:['债权融资','債權融資'],s:['借款·信用贷款·控制风险，不稀释股权','借款·信用貸款·控制風險，不稀釋股權']},
+      {m:['股权融资','股權融資'],s:['出让股份换资源与资金，引入战略伙伴','出讓股份換資源與資金，引入戰略夥伴']},
+      {m:['天使/早期融资','天使/早期融資'],s:['小额多轮·速度优先，快速拿钱验证模型','小額多輪·速度優先，快速拿錢驗證模型']},
+      {m:['自我造血','自我造血'],s:['不融资·先盈利再扩张，保持极致控制权','不融資·先盈利再擴張，保持極致控制權']}
+    ]
+  },
+  {
+    badge:['决策模式','決策模式'], num:['第 5 题','第 5 題'],
+    text:['面对新机会，你通常怎么做决策？','面對新機會，你通常怎麼做決策？'],
+    sub:['描述你真实的行为模式，不是你觉得"对"的方式','描述你真實的行為模式，不是你覺得「對」的方式'],
+    opts:[
+      {m:['数据分析型','數據分析型'],s:['先调研对标、把账算清楚，再做决定','先調研對標、把賬算清楚，再做決定']},
+      {m:['直觉判断型','直覺判斷型'],s:['凭感觉抓趋势，先上车再想怎么开','憑感覺抓趨勢，先上車再想怎麼開']},
+      {m:['小步快跑型','小步快跑型'],s:['先做MVP试错，边跑边迭代，用市场反馈说话','先做MVP試錯，邊跑邊迭代，用市場反饋說話']},
+      {m:['风险规避型','風險規避型'],s:['等局势更明朗、胜算更高再入场','等局勢更明朗、勝算更高再入場']}
+    ]
+  },
+  {
+    badge:['领导风格','領導風格'], num:['第 6 题','第 6 題'],
+    text:['你或你最认同的领导者，是哪种管理风格？','你或你最認同的領導者，是哪種管理風格？'],
+    sub:['不是"应该怎样"，而是你真实偏好的方式','不是「應該怎樣」，而是你真實偏好的方式'],
+    opts:[
+      {m:['强势决断型','強勢決斷型'],s:['快·硬·结果导向，拿破仑式铁腕推进','快·硬·結果導向，拿破崙式鐵腕推進']},
+      {m:['鼓舞动员型','鼓舞動員型'],s:['愿景驱动·激励士气，丘吉尔式感召人心','願景驅動·激勵士氣，丘吉爾式感召人心']},
+      {m:['规则流程型','規則流程型'],s:['制度设计·流程标准·指标复盘，靠系统驱动增长','制度設計·流程標準·指標復盤，靠系統驅動增長']},
+      {m:['授权协作型','授權協作型'],s:['信任团队·共识决策·激发自驱，让人才自然发光','信任團隊·共識決策·激發自驅，讓人才自然發光']}
+    ]
+  },
+  {
+    badge:['用人哲学','用人哲學'], num:['第 7 题','第 7 題'],
+    text:['选人才时，你最看重哪个维度？','選人才時，你最看重哪個維度？'],
+    sub:['如果只能保留一个标准，你选哪个？','如果只能保留一個標準，你選哪個？'],
+    opts:[
+      {m:['聪明才智','聰明才智'],s:['学习能力强·逻辑清晰·举一反三的悟性','學習能力強·邏輯清晰·舉一反三的悟性']},
+      {m:['行业经验','行業經驗'],s:['人脉资源·实战阅历·行业Know-how','人脈資源·實戰閱歷·行業Know-how']},
+      {m:['成长潜力','成長潛力'],s:['韧性强·自驱力足·抗压且持续进化','韌性強·自驅力足·抗壓且持續進化']},
+      {m:['硬核技能','硬核技能'],s:['专业技术过硬·工具熟练·上手即战力','專業技術過硬·工具熟練·上手即戰力']}
+    ]
+  }
+];
+
+const SCORING = [
+  [[2,0,0,0,1],[0,2,1,0,0],[0,0,1,2,0],[0,1,0,1,0]],
+  [[0,2,1,0,0],[2,0,0,1,0],[0,1,2,0,0],[0,0,0,2,1]],
+  [[0,2,1,0,0],[1,0,0,0,2],[1,0,2,0,0],[0,1,0,2,0]],
+  [[0,1,1,0,0],[1,0,2,0,0],[2,0,0,0,1],[0,0,0,2,1]],
+  [[0,1,2,0,0],[2,0,0,0,2],[1,0,0,1,1],[0,2,0,0,0]],
+  [[0,2,0,0,1],[1,0,0,0,2],[0,1,2,0,0],[0,0,1,2,0]],
+  [[2,0,0,1,0],[0,1,2,0,0],[1,0,0,0,2],[0,1,0,2,0]]
+];
+const KEYS = ['tianjin','jiangxing','mouju','zaowu','pojie'];
+
+const TYPES = {
+  tianjin:{
+    name:['天机型','天機型'], sub:['趋势猎手','趨勢獵手'], icon:'⚡', color:'#a855f7', colorB:'rgba(168,85,247,.14)',
+    tags:[['洞察趋势','超级敏感','认知领先','抓时代红利'],['洞察趨勢','超級敏感','認知領先','抓時代紅利']],
+    traits:[['对新事物极度敏感','容易提前看到机会','擅长AI/新媒体/流量','喜欢快速试错','经常All in趋势','认知迭代极快'],
+            ['對新事物極度敏感','容易提前看到機會','擅長AI/新媒體/流量','喜歡快速試錯','經常All in趨勢','認知迭代極快']],
+    fortuneMain:['偏财极强 · 正财一般','偏財極強 · 正財一般'],
+    fortuneItems:[
+      {l:['偏财运','偏財運'],v:'★★★★★',s:true},{l:['正财运','正財運'],v:'★★★☆☆',s:false},
+      {l:['爆发力','爆發力'],v:'★★★★★',s:true},{l:['稳定性','穩定性'],v:'★★☆☆☆',s:false}
+    ],
+    career:['不是最稳的人，但总能最早站上风口。你的财富来自认知差，来自比别人早半步看到趋势并All in。波动极大，但每次爆发都是时代级别的机会。',
+            '不是最穩的人，但總能最早站上風口。你的財富來自認知差，來自比別人早半步看到趨勢並All in。波動極大，但每次爆發都是時代級別的機會。']
+  },
+  jiangxing:{
+    name:['将星型','將星型'], sub:['组织掌控者','組織掌控者'], icon:'⚔️', color:'#f59e0b', colorB:'rgba(245,158,11,.14)',
+    tags:[['掌控全局','管理建设','决策推进','强执行力'],['掌控全局','管理建設','決策推進','強執行力']],
+    traits:[['强结果导向','不喜欢拖沓','天然leader气质','擅长搭建团队','长期主义者','控制欲较强'],
+            ['強結果導向','不喜歡拖沓','天然leader氣質','擅長搭建團隊','長期主義者','控制慾較強']],
+    fortuneMain:['正财强 · 长期积累极强','正財強 · 長期積累極強'],
+    fortuneItems:[
+      {l:['正财运','正財運'],v:'★★★★★',s:true},{l:['长期性','長期性'],v:'★★★★★',s:true},
+      {l:['偏财运','偏財運'],v:'★★★☆☆',s:false},{l:['爆发力','爆發力'],v:'★★☆☆☆',s:false}
+    ],
+    career:['你不是赌徒，而是建立秩序的人。你的财富来自组织力，来自把一群人带向同一目标的执行力。不追求一夜暴富，但长期积累极强，最终成就真正的大事业。',
+            '你不是賭徒，而是建立秩序的人。你的財富來自組織力，來自把一群人帶向同一目標的執行力。不追求一夜暴富，但長期積累極強，最終成就真正的大事業。']
+  },
+  mouju:{
+    name:['谋局型','謀局型'], sub:['资本操盘者','資本操盤者'], icon:'♟️', color:'#10b981', colorB:'rgba(16,185,129,.14)',
+    tags:[['资源整合','资本运作','利益结构','长期布局'],['資源整合','資本運作','利益結構','長期佈局']],
+    traits:[['喜欢算大账','擅长资源交换','深度理解利益结构','对融资天然敏感','布局思维清晰','关系网络极强'],
+            ['喜歡算大賬','擅長資源交換','深度理解利益結構','對融資天然敏感','佈局思維清晰','關係網絡極強']],
+    fortuneMain:['后期财运极强 · 结构性暴富','後期財運極強 · 結構性暴富'],
+    fortuneItems:[
+      {l:['后期财运','後期財運'],v:'★★★★★',s:true},{l:['资本运作','資本運作'],v:'★★★★★',s:true},
+      {l:['早期财运','早期財運'],v:'★★☆☆☆',s:false},{l:['稳定性','穩定性'],v:'★★★★☆',s:true}
+    ],
+    career:['你赚的不是辛苦钱，而是结构的钱。最适合做投资人、VP、联合创始人。你最强的时刻在棋局中段，当别人还在执行时，你已经在思考三步之后的利益结构。',
+            '你賺的不是辛苦錢，而是結構的錢。最適合做投資人、VP、聯合創始人。你最強的時刻在棋局中段，當別人還在執行時，你已經在思考三步之後的利益結構。']
+  },
+  zaowu:{
+    name:['造物型','造物型'], sub:['产品偏执狂','產品偏執狂'], icon:'🔮', color:'#3b82f6', colorB:'rgba(59,130,246,.14)',
+    tags:[['极致产品','技术驱动','创造主义','偏执追求'],['極致產品','技術驅動','創造主義','偏執追求']],
+    traits:[['对产品细节偏执','喜欢沉浸式创造','技术/设计驱动','不喜欢纯社交','价值滞后兑现','深度思考者'],
+            ['對產品細節偏執','喜歡沉浸式創造','技術/設計驅動','不喜歡純社交','價值滯後兌現','深度思考者']],
+    fortuneMain:['前期压抑 · 后期指数级爆发','前期壓抑 · 後期指數級爆發'],
+    fortuneItems:[
+      {l:['潜在爆发','潛在爆發'],v:'★★★★★',s:true},{l:['创造价值','創造價值'],v:'★★★★★',s:true},
+      {l:['早期财运','早期財運'],v:'★★☆☆☆',s:false},{l:['变现速度','變現速度'],v:'★★★☆☆',s:false}
+    ],
+    career:['你真正的野心，是创造一个属于自己的世界。真正的价值会滞后兑现——但一旦爆发，就是指数级的。在AI创业时代，这类型将创造最大的长期历史价值。',
+            '你真正的野心，是創造一個屬於自己的世界。真正的價值會滯後兌現——但一旦爆發，就是指數級的。在AI創業時代，這類型將創造最大的長期歷史價值。']
+  },
+  pojie:{
+    name:['破界型','破界型'], sub:['野路子增长者','野路子增長者'], icon:'🚀', color:'#ef4444', colorB:'rgba(239,68,68,.14)',
+    tags:[['野性流量','营销爆发','冒险精神','增长黑客'],['野性流量','營銷爆發','冒險精神','增長黑客']],
+    traits:[['不按套路出牌','嗅觉极度敏锐','擅长玩转流量','喜欢高速节奏','快速起盘能力强','情绪化决策'],
+            ['不按套路出牌','嗅覺極度敏銳','擅長玩轉流量','喜歡高速節奏','快速起盤能力強','情緒化決策']],
+    fortuneMain:['现金流极强 · 守财一般','現金流極強 · 守財一般'],
+    fortuneItems:[
+      {l:['现金流','現金流'],v:'★★★★★',s:true},{l:['增长速度','增長速度'],v:'★★★★★',s:true},
+      {l:['守财能力','守財能力'],v:'★★☆☆☆',s:false},{l:['稳定性','穩定性'],v:'★★☆☆☆',s:false}
+    ],
+    career:['你不是体系里的人，你本身就是变量。特别适合00后创业者、短视频、灰度增长、AI流量玩家。你能快速起盘、野蛮生长，但最好找一个能"收住"你的搭档。',
+            '你不是體系裡的人，你本身就是變量。特別適合00後創業者、短視頻、灰度增長、AI流量玩家。你能快速起盤、野蠻生長，但最好找一個能「收住」你的搭檔。']
+  }
+};
+
+const SLOT_SYMS = ['🦐','💰','🏮','🐉','💎','⭐','🎴','🌸'];
+
+let qIdx = 0, answers = [], resultKey = null, audioCtx = null, loadTimers = [];
+
+// ─── LANGUAGE ───
+function applyLang(){
+  const s=li;
+  document.getElementById('lang-btn').textContent=UI.langBtn[1-s];
+  document.documentElement.lang=s===1?'zh-TW':'zh-CN';
+  document.getElementById('w-brand').textContent=UI.brandName[s];
+  document.getElementById('w-macau-badge').textContent=UI.macauBadge[s];
+  document.getElementById('w-tagline').innerHTML=UI.tagline[s];
+  document.getElementById('w-badge').textContent=UI.welcomeBadge[s];
+  document.getElementById('btn-start').textContent=UI.startBtn[s];
+  document.getElementById('q-logo').textContent=UI.qLogo[s];
+  document.getElementById('l-title').textContent=UI.loadTitle[s];
+  document.getElementById('l-sub').textContent=UI.loadSub[s];
+  document.getElementById('r-hd-sub').textContent=UI.resHdSub[s];
+  document.getElementById('r-hd-main').textContent=UI.resHdMain[s];
+  document.getElementById('rc-logo').textContent=UI.rcLogo[s];
+  document.getElementById('sec-tags-lbl').textContent=UI.secTags[s];
+  document.getElementById('sec-traits-lbl').textContent=UI.secTraits[s];
+  document.getElementById('sec-fortune-lbl').textContent=UI.secFortune[s];
+  document.getElementById('sec-career-lbl').textContent=UI.secCareer[s];
+  document.getElementById('btn-save').textContent=UI.btnSave[s];
+  document.getElementById('btn-share').textContent=UI.btnShare[s];
+  document.getElementById('btn-retry').textContent=UI.btnRetry[s];
+  document.getElementById('rc-foot-l').textContent=UI.rcFootL[s];
+  document.getElementById('e-title').innerHTML=UI.eTitle[s];
+  document.getElementById('e-desc').innerHTML=UI.eDesc[s];
+  document.getElementById('ep1').textContent=UI.ePerk1[s];
+  document.getElementById('ep2').textContent=UI.ePerk2[s];
+  document.getElementById('ep3').textContent=UI.ePerk3[s];
+  document.getElementById('ep4').textContent=UI.ePerk4[s];
+  document.getElementById('email-in').placeholder=UI.ePlaceholder[s];
+  const bRep=document.getElementById('btn-report');
+  if(!bRep.disabled) bRep.textContent=UI.eBtnReport[s];
+  document.getElementById('e-note').textContent=UI.eNote[s];
+  document.getElementById('e-ok-main').textContent=UI.eOkMain[s];
+  document.getElementById('e-ok-sub').innerHTML=UI.eOkSub[s];
+  const el_bq=document.getElementById('back-q-txt');
+  const el_bl=document.getElementById('back-l-txt');
+  if(el_bq) el_bq.textContent='返回';
+  if(el_bl) el_bl.textContent='返回';
+  if(document.getElementById('scr-question').classList.contains('active')) loadQ(qIdx,true);
+  if(resultKey&&document.getElementById('scr-result').classList.contains('active')) renderResult(resultKey);
+}
+document.getElementById('lang-btn').addEventListener('click',()=>{ li=1-li; applyLang(); playClick(); });
+
+// ─── AUDIO ───
+function initAudio(){
+  if(audioCtx) return;
+  try{ audioCtx=new(window.AudioContext||window.webkitAudioContext)(); startAmbient(); }catch(e){}
+}
+function tone(freq,type,dur,vol,delay=0){
+  if(!audioCtx) return;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.connect(g); g.connect(audioCtx.destination);
+  o.type=type; o.frequency.value=freq;
+  const t=audioCtx.currentTime+delay;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.01);
+  g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  o.start(t); o.stop(t+dur+.01);
+}
+function playClick(){ tone(900,'sine',.12,.25); tone(1300,'sine',.08,.14,.04) }
+function playCoin(d=0){ tone(1400,'sine',.1,.3,d); tone(900,'sine',.07,.18,d+.05) }
+function playSlot(){
+  if(!audioCtx) return;
+  try{
+    const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*.55,audioCtx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*.4;
+    const src=audioCtx.createBufferSource(); src.buffer=buf;
+    const f=audioCtx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=480; f.Q.value=2;
+    const g=audioCtx.createGain();
+    g.gain.setValueAtTime(.1,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.45);
+    src.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    src.start(); src.stop(audioCtx.currentTime+.45);
+  }catch(e){}
+}
+function playFanfare(){
+  [523,659,784,1047].forEach((f,i)=>tone(f,'triangle',.35,.26,i*.14));
+  for(let i=0;i<10;i++) playCoin(.52+i*.08);
+}
+function startAmbient(){
+  if(!audioCtx) return;
+  try{
+    const o1=audioCtx.createOscillator(), o2=audioCtx.createOscillator();
+    const g=audioCtx.createGain(), lfo=audioCtx.createOscillator(), lg=audioCtx.createGain();
+    o1.frequency.value=55; o2.frequency.value=82; o1.type='sine'; o2.type='sine';
+    lfo.frequency.value=.25; lfo.type='sine'; lg.gain.value=.013; g.gain.value=.032;
+    lfo.connect(lg); lg.connect(g.gain);
+    o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+    o1.start(); o2.start(); lfo.start();
+  }catch(e){}
+}
+
+// ─── PARTICLES ───
+function mkParticles(id,n=14){
+  const c=document.getElementById(id); if(!c) return;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');
+    if(Math.random()>.55){
+      p.className='ptc'; p.textContent=Math.random()>.5?'✦':'◈';
+      p.style.cssText=`left:${Math.random()*100}%;bottom:0;background:transparent;
+        color:${Math.random()>.5?'#00c8a8':'#e63333'};
+        font-size:${8+Math.random()*9}px;width:auto;height:auto;border-radius:0;
+        animation-duration:${5+Math.random()*7}s;animation-delay:${Math.random()*8}s`;
+    } else {
+      p.className='ptc';
+      p.style.cssText=`left:${Math.random()*100}%;bottom:0;
+        background:${Math.random()>.5?'#00c8a8':'#e63333'};
+        width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;
+        animation-duration:${5+Math.random()*7}s;animation-delay:${Math.random()*8}s`;
+    }
+    c.appendChild(p);
+  }
+}
+function mkStars(id){
+  const c=document.getElementById(id); if(!c) return;
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div'); s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*60}%;
+      width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;
+      animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;opacity:.45`;
+    c.appendChild(s);
+  }
+}
+
+// ─── SCREEN SWITCH ───
+function goTo(id){
+  document.querySelectorAll('.screen.active').forEach(s=>{
+    s.classList.remove('active'); s.classList.add('exit');
+    setTimeout(()=>s.classList.remove('exit'),500);
+  });
+  setTimeout(()=>{ const el=document.getElementById(id); if(el) el.classList.add('active') },290);
+}
+
+// ─── QUESTION ───
+function loadQ(i,silent=false){
+  const q=QS[i];
+  const card=document.getElementById('q-card');
+  if(!silent){ card.style.opacity='0'; card.style.transform='translateY(12px)'; }
+  setTimeout(()=>{
+    document.getElementById('q-badge').textContent=L(q.badge);
+    document.getElementById('q-num').textContent=L(q.num);
+    document.getElementById('q-text').textContent=L(q.text);
+    document.getElementById('q-sub').textContent=L(q.sub);
+    document.getElementById('q-step').textContent=(i+1)+' / '+QS.length;
+    document.getElementById('prog-fill').style.width=((i+1)/QS.length*100)+'%';
+    const btn=document.getElementById('btn-next');
+    btn.textContent=i===QS.length-1?L(UI.submitBtn):L(UI.nextBtn);
+    btn.classList.remove('on');
+    const opts=document.getElementById('q-opts');
+    opts.innerHTML='';
+    q.opts.forEach((o,oi)=>{
+      const b=document.createElement('button');
+      b.className='opt'; if(answers[i]===oi) b.classList.add('sel');
+      b.innerHTML=`<span class="opt-letter">${['A','B','C','D'][oi]}</span>
+        <span style="flex:1"><span class="opt-main">${L(o.m)}</span><span class="opt-sub">${L(o.s)}</span></span>`;
+      b.addEventListener('click',()=>{
+        opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel'); answers[i]=oi; btn.classList.add('on'); playClick();
+      });
+      opts.appendChild(b);
+    });
+    if(answers[i]!==undefined) btn.classList.add('on');
+    card.style.transition='opacity .26s,transform .26s';
+    card.style.opacity='1'; card.style.transform='translateY(0)';
+  },silent?0:55);
+}
+
+// ─── SCORING ───
+function calcResult(){
+  const sc={tianjin:0,jiangxing:0,mouju:0,zaowu:0,pojie:0};
+  answers.forEach((a,qi)=>{
+    if(a===undefined||!SCORING[qi]) return;
+    SCORING[qi][a].forEach((v,ki)=>{ sc[KEYS[ki]]+=v });
+  });
+  let best=null,bestV=-1;
+  KEYS.forEach(k=>{ if(sc[k]>bestV){bestV=sc[k];best=k} });
+  return best||'tianjin';
+}
+
+// ─── LOADING ───
+function clearLoadTimers(){ loadTimers.forEach(id=>clearInterval(id)); loadTimers=[]; }
+
+function startLoading(cb){
+  clearLoadTimers();
+  const syms=[...SLOT_SYMS,...SLOT_SYMS];
+  const s2=[...SLOT_SYMS.slice(3),...SLOT_SYMS.slice(0,3),...SLOT_SYMS.slice(3),...SLOT_SYMS.slice(0,3)];
+  const s3=[...SLOT_SYMS.slice(5),...SLOT_SYMS.slice(0,5),...SLOT_SYMS.slice(5),...SLOT_SYMS.slice(0,5)];
+  document.getElementById('reel-a').innerHTML=syms.map(s=>`<div class="sym">${s}</div>`).join('');
+  document.getElementById('reel-b').innerHTML=s2.map(s=>`<div class="sym">${s}</div>`).join('');
+  document.getElementById('reel-c').innerHTML=s3.map(s=>`<div class="sym">${s}</div>`).join('');
+  const txts=UI.loadTexts[li];
+  let pct=0,ti=0;
+  const pEl=document.getElementById('load-prog'), pctEl=document.getElementById('load-pct');
+  const tEl=document.getElementById('load-txt');
+  playSlot();
+  const sT=setInterval(()=>{ if(pct<90) playSlot() },800);
+  const tT=setInterval(()=>{ ti=(ti+1)%txts.length; tEl.textContent=txts[ti] },700);
+  const pT=setInterval(()=>{
+    const inc=pct<65?2.5+Math.random()*3:pct<90?1+Math.random()*2:.4+Math.random();
+    pct=Math.min(100,pct+inc);
+    pEl.style.width=pct+'%'; pctEl.textContent=Math.floor(pct)+'%';
+    if(pct<90&&Math.random()<.12) playClick();
+    if(pct>=100){
+      clearLoadTimers(); tEl.textContent=UI.doneText[li];
+      setTimeout(()=>{ playFanfare(); cb() },600);
+    }
+  },85);
+  loadTimers=[sT,tT,pT];
+}
+
+// ─── RESULT RENDER ───
+function renderResult(key){
+  const T=TYPES[key];
+  document.getElementById('rc-icon').textContent=T.icon;
+  const tn=document.getElementById('rc-type');
+  tn.textContent=L(T.name); tn.style.color=T.color;
+  document.getElementById('rc-sub').textContent=L(T.sub);
+  document.getElementById('rc-head').style.background=`linear-gradient(to bottom,${T.colorB},transparent)`;
+  document.getElementById('rc-tags').innerHTML=
+    T.tags[li].map(t=>`<span class="tag" style="color:${T.color};border-color:${T.color}55;background:${T.color}18">${t}</span>`).join('');
+  document.getElementById('rc-traits').innerHTML=T.traits[li].map(t=>`<div class="trait">${t}</div>`).join('');
+  document.getElementById('rc-fortune').innerHTML=`
+    <div class="fortune-main">${T.fortuneMain[li]}</div>
+    <div class="fortune-grid">
+      ${T.fortuneItems.map(fi=>`
+        <div class="f-item">
+          <span class="f-lbl">${L(fi.l)}</span>
+          <span class="f-val ${fi.s?'f-strong':'f-weak'}">${fi.v}</span>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('rc-career').textContent=T.career[li];
+  const now=new Date();
+  document.getElementById('rc-date').textContent=
+    `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+  document.getElementById('sec-tags-lbl').textContent=UI.secTags[li];
+  document.getElementById('sec-traits-lbl').textContent=UI.secTraits[li];
+  document.getElementById('sec-fortune-lbl').textContent=UI.secFortune[li];
+  document.getElementById('sec-career-lbl').textContent=UI.secCareer[li];
+  document.getElementById('rc-logo').textContent=UI.rcLogo[li];
+  document.getElementById('rc-foot-l').textContent=UI.rcFootL[li];
+}
+
+// ─── COIN RAIN ───
+function coinRain(){
+  const cont=document.getElementById('coin-rain');
+  const pool=['💰','🦐','✦','💎','⭐','🏮','◈'];
+  let n=0;
+  const iv=setInterval(()=>{
+    if(n++>28){ clearInterval(iv); return }
+    const el=document.createElement('div'); el.className='coin-drop';
+    el.textContent=pool[Math.floor(Math.random()*pool.length)];
+    el.style.left=Math.random()*100+'vw';
+    el.style.animationDuration=(1.4+Math.random()*1.8)+'s';
+    el.style.animationDelay=Math.random()*.5+'s';
+    el.style.fontSize=(16+Math.random()*18)+'px';
+    cont.appendChild(el); setTimeout(()=>el.remove(),3200);
+  },90);
+}
+
+// ─── SAVE / SHARE ───
+async function saveImage(){
+  showToast(UI.tGenImg[li]);
+  try{
+    const card=document.getElementById('result-card');
+    const canvas=await html2canvas(card,{backgroundColor:'#0e1812',scale:2.5,useCORS:true,logging:false,allowTaint:true});
+    const url=canvas.toDataURL('image/png');
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      const w=window.open(); w.document.write(`<img src="${url}" style="max-width:100%;display:block">`);
+      showToast(UI.tLongPress[li]);
+    } else {
+      const a=document.createElement('a'); a.href=url;
+      a.download='灵虾命格_'+Date.now()+'.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      showToast(UI.tSaved[li]);
+    }
+  }catch(e){ showToast(UI.tScreenshot[li]) }
+}
+async function share(){
+  const T=TYPES[resultKey];
+  const txt=`我在靈蝦·澳門財運命格測試中獲得了【${L(T.name)}·${L(T.sub)}】！\n${T.fortuneMain[li]}\n快來測測你的財運命格！`;
+  if(navigator.share){
+    try{
+      const canvas=await html2canvas(document.getElementById('result-card'),{backgroundColor:'#0e1812',scale:2,useCORS:true});
+      canvas.toBlob(async blob=>{
+        const file=new File([blob],'靈蝦命格.png',{type:'image/png'});
+        try{ await navigator.share({text:txt,files:[file]}) }
+        catch(e){ await navigator.share({text:txt}) }
+      });
+    }catch(e){ navigator.clipboard&&navigator.clipboard.writeText(txt); showToast(UI.tCopied[li]) }
+  } else {
+    navigator.clipboard&&navigator.clipboard.writeText(txt); showToast(UI.tCopied[li]);
+  }
+}
+
+// ─── TOAST ───
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ─── EMAIL ───
+function submitEmail(){
+  const inp=document.getElementById('email-in'); const v=inp.value.trim();
+  if(!v||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ showToast(UI.tEmailErr[li]); inp.focus(); return }
+  const btn=document.getElementById('btn-report');
+  btn.textContent=UI.eBtnSending[li]; btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('email-form').style.display='none';
+    document.getElementById('email-ok').style.display='block';
+    playFanfare(); showToast(UI.tEmailOk[li]);
+  },1400);
+}
+
+// ─── INIT ───
+mkStars('ptc-w'); mkParticles('ptc-w',16);
+mkParticles('ptc-q',10); mkParticles('ptc-l',10); mkParticles('ptc-r',20);
+applyLang();
+
+document.getElementById('btn-start').addEventListener('click',()=>{
+  initAudio(); playClick(); qIdx=0; answers=[]; loadQ(0); goTo('scr-question');
+});
+document.getElementById('btn-next').addEventListener('click',()=>{
+  const btn=document.getElementById('btn-next');
+  if(!btn.classList.contains('on')) return;
+  playClick();
+  if(qIdx<QS.length-1){ qIdx++; loadQ(qIdx); }
+  else {
+    goTo('scr-loading');
+    setTimeout(()=>{
+      startLoading(()=>{
+        resultKey=calcResult(); renderResult(resultKey);
+        goTo('scr-result'); setTimeout(()=>coinRain(),400);
+      });
+    },400);
+  }
+});
+document.getElementById('btn-save').addEventListener('click',saveImage);
+document.getElementById('btn-share').addEventListener('click',()=>share());
+document.getElementById('btn-report').addEventListener('click',submitEmail);
+document.getElementById('email-in').addEventListener('keypress',e=>{ if(e.key==='Enter') submitEmail() });
+
+// ─── BACK BUTTONS ───
+document.getElementById('btn-back-q').addEventListener('click',()=>{
+  playClick();
+  if(qIdx>0){ qIdx--; loadQ(qIdx); } else { goTo('scr-welcome'); }
+});
+document.getElementById('btn-back-l').addEventListener('click',()=>{
+  playClick(); clearLoadTimers();
+  document.getElementById('load-prog').style.width='0%';
+  document.getElementById('load-pct').textContent='0%';
+  document.getElementById('load-txt').textContent=UI.loadTexts[li][0];
+  qIdx=QS.length-1; loadQ(qIdx); goTo('scr-question');
+});
+// btn-back-r removed from result screen per design update
+document.getElementById('btn-retry').addEventListener('click',()=>{
+  qIdx=0; answers=[]; resultKey=null;
+  document.getElementById('load-prog').style.width='0%';
+  document.getElementById('load-pct').textContent='0%';
+  document.getElementById('load-txt').textContent=UI.loadTexts[li][0];
+  document.getElementById('email-form').style.display='block';
+  document.getElementById('email-ok').style.display='none';
+  document.getElementById('email-in').value='';
+  const bRep=document.getElementById('btn-report');
+  bRep.textContent=UI.eBtnReport[li]; bRep.disabled=false;
+  loadQ(0); goTo('scr-welcome');
+});
+document.addEventListener('touchmove',e=>{
+  if(!e.target.closest('#scr-result')&&!e.target.closest('#scr-question')){
+    e.preventDefault();
+  }
+},{passive:false});
+</script>
+</body>
+</html>
