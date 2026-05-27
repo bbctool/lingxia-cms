@@ -14,6 +14,7 @@ import {
   revalidateArticles,
   revalidateArticlesDelete,
 } from '../hooks/revalidateSite'
+import { articleLexicalEditor } from '../lib/articleLexicalEditor'
 import { livePreviewUrl } from '../lib/previewUrl'
 
 export const Articles: CollectionConfig = {
@@ -111,6 +112,7 @@ export const Articles: CollectionConfig = {
       type: 'richText',
       required: true,
       localized: true,
+      editor: articleLexicalEditor,
     },
     {
       name: 'cover',
