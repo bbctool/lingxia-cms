@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 import { sitesAccess } from '../access'
 import { DEFAULT_LOCALE, LOCALE_OPTIONS } from '../config/locales'
+import {
+  revalidateSites,
+  revalidateSitesDelete,
+} from '../hooks/revalidateSite'
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
@@ -14,6 +18,10 @@ export const Sites: CollectionConfig = {
     defaultColumns: ['name', 'slug', 'primaryDomain', 'defaultLocale'],
   },
   access: sitesAccess,
+  hooks: {
+    afterChange: [revalidateSites],
+    afterDelete: [revalidateSitesDelete],
+  },
   fields: [
     {
       name: 'slug',

@@ -39,7 +39,7 @@ const SETTINGS_ZH = {
 }
 
 const SETTINGS_EN = {
-  brandName: 'Lingxia',
+  brandName: 'FortuneClaw',
   defaultSeo: {
     metaTitle: 'Lingxia - Answers Within All Things',
     metaDescription:

@@ -93,6 +93,20 @@ export function buildCharacterRevalidate(
   return { tags: [...new Set(tags)], paths: [...new Set(paths)], slug, site: siteSlug }
 }
 
+export function buildSiteRevalidate(siteSlug: string): RevalidatePayload {
+  const tags = [tag('site', siteSlug, 'locales')]
+  const paths = ['/', '/sitemap.xml']
+
+  for (const { code } of LOCALES) {
+    paths.push(`/${code}`)
+    paths.push(`/${code}/blog`)
+    paths.push(`/${code}/faq`)
+    paths.push(`/${code}/characters`)
+  }
+
+  return { tags: [...new Set(tags)], paths: [...new Set(paths)], site: siteSlug }
+}
+
 export function buildSiteSettingsRevalidate(siteSlug: string): RevalidatePayload {
   const tags: string[] = []
   const paths: string[] = []

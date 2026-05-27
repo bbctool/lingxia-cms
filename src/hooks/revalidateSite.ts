@@ -6,6 +6,7 @@ import {
   buildCharacterRevalidate,
   buildFaqRevalidate,
   buildPageRevalidate,
+  buildSiteRevalidate,
   buildSiteSettingsRevalidate,
   type RevalidatePayload,
 } from '../lib/revalidateTags'
@@ -95,4 +96,22 @@ export const revalidateSiteSettingsDelete: CollectionAfterDeleteHook = async (
   args,
 ) => {
   await siteSettingsHooks.onDelete(args)
+}
+
+export const revalidateSites: CollectionAfterChangeHook = async ({
+  doc,
+  operation,
+}) => {
+  if (operation !== 'create' && operation !== 'update') return
+  const siteSlug = String(doc.slug ?? '')
+  if (!siteSlug) return
+  void postRevalidate(buildSiteRevalidate(siteSlug))
+}
+
+export const revalidateSitesDelete: CollectionAfterDeleteHook = async ({
+  doc,
+}) => {
+  const siteSlug = String(doc.slug ?? '')
+  if (!siteSlug) return
+  void postRevalidate(buildSiteRevalidate(siteSlug))
 }
