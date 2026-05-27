@@ -10,6 +10,6 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
-/media
+media
 .payload
 /deploy/keys/
